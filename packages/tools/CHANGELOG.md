@@ -1,5 +1,11 @@
 # @likg/tools
 
+## 2.0.1
+
+### Patch Changes
+
+- base64 兼容 blob:http://xxx 格式的处理
+
 ## 2.0.0
 
 ### Major Changes

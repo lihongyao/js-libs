@@ -732,8 +732,6 @@ class Tools {
 	public static base64(target: string | File | Blob): Promise<string> {
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
-
-			// 处理 File 或 Blob 对象
 			const handleFileOrBlob = (fileOrBlob: File | Blob) => {
 				reader.readAsDataURL(fileOrBlob);
 				reader.onload = () => {
@@ -743,12 +741,9 @@ class Tools {
 					reject(new Error('读取文件或Blob对象失败'));
 				};
 			};
-
 			if (target instanceof File || target instanceof Blob) {
-				// 处理 File 或 Blob
 				handleFileOrBlob(target);
-			} else if (typeof target === 'string' && /^http/.test(target)) {
-				// 处理 URL
+			} else if (typeof target === 'string' && /http/.test(target)) {
 				const xhr = new XMLHttpRequest();
 				xhr.open('GET', target, true);
 				xhr.responseType = 'blob';
@@ -764,7 +759,6 @@ class Tools {
 				};
 				xhr.send();
 			} else {
-				// 无法处理的类型
 				reject(new Error('文件格式有误或目标类型不支持'));
 			}
 		});
