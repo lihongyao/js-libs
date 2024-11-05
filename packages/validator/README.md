@@ -117,4 +117,22 @@ static isVideo(src: string): boolean;
  * @returns
  */
 static checkFile(options: ICheckFileSize | ICheckFileExtension): boolean;
+/**
+ * 车牌号校验
+ * @param plate
+ * @returns
+ */
+static isLicensePlate(plate: string): boolean;
+/**
+ * 驾驶证号校验（粗率）
+ * @param license
+ * @returns
+ */
+static isDriverLicense(license: string): boolean;
+/**
+ * 行驶证号校验（粗率）
+ * @param license
+ * @returns
+ */
+static isVehicleLicense(license: string): boolean;
 ```

@@ -1,5 +1,11 @@
 # @likg/validator
 
+## 1.0.8
+
+### Patch Changes
+
+- 新增车牌号/行驶证/驾驶证校验
+
 ## 1.0.7
 
 ### Patch Changes

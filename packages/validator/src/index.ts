@@ -22,17 +22,39 @@ class Validator {
 	 * 中文名校验
 	 * @param v
 	 */
-	public static isUsername(v: string) {
+	public static isChineseName(v: string) {
 		return /^[\u4e00-\u9fa5]{2,6}$/.test(v);
 	}
 	/**
 	 * 身份证校验
 	 * @param v
 	 */
-	public static isIdCard(v: string) {
-		return /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{7}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}$)/.test(
-			v
-		);
+	public static isIdCard(id: string) {
+		// 18位身份证正则表达式
+		const regex18 = /^(\\d{17}[0-9X]$)/;
+		// 15位身份证正则表达式
+		const regex15 = /^\d{15}$/;
+
+		// 检查长度和基本格式
+		if (id.length === 18) {
+			if (!regex18.test(id)) return false;
+
+			// 18位身份证号最后一位为校验位
+			const weights = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+			const checkCodes = '10X98765432';
+
+			let sum = 0;
+			for (let i = 0; i < 17; i++) {
+				sum += Number(id[i]) * weights[i];
+			}
+
+			const checkCode = checkCodes[sum % 11];
+			return checkCode === id[17];
+		} else if (id.length === 15) {
+			return regex15.test(id);
+		}
+
+		return false; // 不符合身份证号长度
 	}
 	/**
 	 * 验证微信号
@@ -161,7 +183,7 @@ class Validator {
 	}
 
 	/**
-	 * 校验文件尺寸/扩展名
+	 * 文件尺寸/扩展名校验
 	 * @param options
 	 * @returns
 	 */
@@ -198,6 +220,51 @@ class Validator {
 				.includes(extension);
 		}
 		return false;
+	}
+
+	/**
+	 * 车牌号校验
+	 * @param plate
+	 * @returns
+	 */
+	public static isLicensePlate(plate: string) {
+		// 1. 蓝牌车牌（民用车）：1个汉字 + 1个字母 + 5个字母或数字
+		const bluePlate =
+			/^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼港澳]{1}[A-Z]{1}[A-Z0-9]{5}$/;
+		// 2. 黄牌车牌（货车或营运车）：1个汉字 + 1个字母 + 5个字母或数字，但第二个字符不能是字母 'I' 或 'O'
+		const yellowPlate =
+			/^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼港澳]{1}[A-HJ-NP-Z]{1}[A-Z0-9]{5}$/;
+		// 3. 绿牌车牌（新能源车）：1个汉字 + 1个字母 + D或F + 5个字母或数字（小型新能源）或 4个数字
+		const greenPlateSmall =
+			/^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼港澳]{1}[A-Z]{1}[DF]{1}[A-Z0-9]{5}$/;
+		const greenPlateLarge =
+			/^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼港澳]{1}[A-Z]{1}[DF]{1}[0-9]{4}$/;
+		return (
+			bluePlate.test(plate) ||
+			yellowPlate.test(plate) ||
+			greenPlateSmall.test(plate) ||
+			greenPlateLarge.test(plate)
+		);
+	}
+
+	/**
+	 * 驾驶证号校验（粗率）
+	 * @param license
+	 * @returns
+	 */
+	public static isDriverLicense(license: string) {
+		return /^[A-Z]{1}[0-9]{1}[A-Z]{1}[0-9]{1}[A-Z]{1}[0-9]{1}[0-9]{2}$/.test(
+			license
+		);
+	}
+
+	/**
+	 * 行驶证号校验（粗率）
+	 * @param license
+	 * @returns
+	 */
+	public static isVehicleLicense(license: string) {
+		return /^[A-Z]{1}[A-Z0-9]{1}\d{5}[A-Z0-9]{3}\d{5}$/.test(license);
 	}
 }
 

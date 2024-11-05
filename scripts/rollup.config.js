@@ -1,7 +1,7 @@
 import { defineConfig } from 'rollup';
 import { generateRollupConfig, getPkgNames } from './utils';
 
-const libs = ['tools'];
+const libs = ['validator'];
 const rollupConfigs = [];
 
 const pkgNames = libs.length ? libs : getPkgNames();
