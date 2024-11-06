@@ -1,6 +1,6 @@
 {
 	"name": "@likg/validator",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"description": "验证库",
 	"type": "module",
 	"types": "./dist/index.d.ts",

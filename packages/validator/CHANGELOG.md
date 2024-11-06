@@ -1,5 +1,11 @@
 # @likg/validator
 
+## 1.0.9
+
+### Patch Changes
+
+- 精准校验身份证号
+
 ## 1.0.8
 
 ### Patch Changes
