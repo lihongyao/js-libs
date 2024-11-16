@@ -1,5 +1,11 @@
 # @likg/tools
 
+## 2.0.2
+
+### Patch Changes
+
+- 优化loadScript
+
 ## 2.0.1
 
 ### Patch Changes

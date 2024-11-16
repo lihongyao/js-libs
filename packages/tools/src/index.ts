@@ -767,32 +767,44 @@ class Tools {
 	 * 动态加载script标签
 	 * @param src {string | string[]} 加载脚本的地址，
 	 * @param type {string} 默认值：text/javascript
+	 * @returns
 	 */
 	public static loadScript(
 		src: string | string[],
-		type: string = 'text/javascript'
-	) {
-		// 异常处理
-		if (!src || (src && src.length === 0)) {
-			throw new Error('lg-tools: loading script error. [no params]');
-		}
-		if (['string', 'array'].indexOf(Tools.toRawType(src)) === -1) {
-			throw new Error('lg-tools: loading script error. [type error]');
-		}
-		let srcs: string[] = [];
-		// 如果传入的是字符串
-		if (Tools.toRawType(src) === 'string') {
-			srcs = [src as string];
-		}
-		// 如果传入的数组
-		if (Tools.toRawType(src) === 'array') {
-			srcs = src as string[];
-		}
-		srcs.forEach((s) => {
-			const script = window.document.createElement('script');
-			script.setAttribute('type', type);
-			script.setAttribute('src', s);
-			document.body.appendChild(script);
+		type = 'text/javascript'
+	): Promise<boolean> {
+		// -- 工具函数，用于加载单个脚本
+		const load = (src: string): Promise<boolean> => {
+			return new Promise((resolve) => {
+				const scriptElem = document.createElement('script');
+				scriptElem.type = type;
+				scriptElem.src = src;
+				scriptElem.onload = () => resolve(true);
+				scriptElem.onerror = () => resolve(false);
+				document.body.appendChild(scriptElem);
+			});
+		};
+
+		return new Promise(async (resolve) => {
+			// -- 检查 src 参数有效性
+			if (!src || (Array.isArray(src) && src.length === 0)) {
+				console.log('@likg/tools: loading script error. [no params]');
+				return resolve(false);
+			}
+			// -- 确保 src 是一个数组
+			const srcList = Array.isArray(src) ? src : [src];
+			// -- 按顺序逐个加载脚本
+			for (let i = 0; i < srcList.length; i++) {
+				const isOk = await load(srcList[i]);
+				if (isOk) {
+					console.log(`🟢 脚本「${i}」加载成功，地址：${srcList[i]}`);
+				} else {
+					console.log(`🔴 脚本「${i}」加载失败，地址：${srcList[i]}`);
+					return resolve(false);
+				}
+			}
+			// -- 全部脚本按顺序加载成功
+			resolve(true);
 		});
 	}
 
