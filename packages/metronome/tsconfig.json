@@ -1,0 +1,24 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"lib": ["ESNext", "DOM"],
+		"strict": true,
+		"esModuleInterop": true,
+
+		"declaration": true,
+		"declarationDir": "dist",
+
+		"sourceMap": true,
+		"useDefineForClassFields": true,
+		"moduleResolution": "Node",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": false,
+		"skipLibCheck": true
+	}
+}

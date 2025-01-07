@@ -1,0 +1,40 @@
+{
+	"name": "@likg/metronome",
+	"version": "1.0.1",
+	"description": "节拍器",
+	"type": "module",
+	"types": "./dist/index.d.ts",
+	"main": "./dist/index.cjs.js",
+	"module": "./dist/index.esm.js",
+	"exports": {
+		"import": "./dist/index.esm.js",
+		"require": "./dist/index.cjs.js",
+		"types": "./dist/index.d.ts"
+	},
+	"buildOptions": {
+		"formats": [
+			"iife",
+			"cjs",
+			"umd",
+			"esm"
+		],
+		"moduleName": "Storage"
+	},
+	"files": [
+		"dist/**/*",
+		"README.md"
+	],
+	"keywords": [
+		"节拍器"
+	],
+	"author": "李鸿耀",
+	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/lihongyao/lg-libs.git"
+	},
+	"bugs": {
+		"url": "https://github.com/lihongyao/lg-libs/issues"
+	},
+	"homepage": "https://github.com/lihongyao/lg-libs.git#readme"
+}
