@@ -1,6 +1,10 @@
 # 节拍器
 
-![](./assets/m.jpg);
+![](https://github.com/lihongyao/js-libs/raw/main/packages/metronome/assets/m.jpg)
+
+节拍器是一种能发出稳定节拍的装置，在乐理学习和音乐演奏中用于确定速度、训练节奏。
+
+`@likg/metronome` 基于原生 JavaScript 实现，提供了常用方法。
 
 # 安装
 
@@ -13,8 +17,22 @@ $ yarn add @likg/metronome
 # 使用
 
 ```tsx
+// 1. 导入 @likg/metronome
 import MetronomeCls from '@likg/metronome';
-const metronomeCls = new MetronomeCls(options: MetronomeOptions);
+
+// 2. 构造实例
+const metronomeCls = new MetronomeCls({
+  bpm: 90,
+  timeSignature: '4/4',
+  accentSoundUrl: '/assets/piano/Click1.ogg',
+  normalSoundUrl: '/assets/piano/Click2.ogg'
+});
+
+// 3. 启用节拍器
+metronomeCls.start( ... );
+
+// 4. 停止节拍器
+metronomeCls.stop( ... );                
 ```
 
 # API
