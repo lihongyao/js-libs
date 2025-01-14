@@ -1,6 +1,6 @@
 {
 	"name": "@likg/metronome",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "节拍器",
 	"type": "module",
 	"types": "./dist/index.d.ts",

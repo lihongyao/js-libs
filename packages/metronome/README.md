@@ -9,8 +9,8 @@
 # 安装
 
 ```shell
-$ npm i @likg/metronome
-$ pnpm i @likg/metronome
+$ npm install @likg/metronome
+$ pnpm add @likg/metronome
 $ yarn add @likg/metronome
 ```
 
