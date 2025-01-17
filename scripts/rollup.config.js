@@ -1,7 +1,7 @@
 import { defineConfig } from 'rollup';
 import { generateRollupConfig, getPkgNames } from './utils';
 
-const libs = ['metronome'];
+const libs = ['brush'];
 const rollupConfigs = [];
 
 const pkgNames = libs.length ? libs : getPkgNames();

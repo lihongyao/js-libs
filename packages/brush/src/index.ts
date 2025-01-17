@@ -263,6 +263,8 @@ export default class Brush {
 	private _saveToHistories() {
 		// -- 异常处理
 		if (!this.ctx || !this.canvas) return;
+		// -- 矫正历史记录，移除超出边界的历史记录
+		this.histories = this.histories.slice(0, this.historiesIndex + 1);
 		// -- 判断当前历史记录是否抵达边界值，如果抵达，则删除第1项并更新下标
 		if (this.histories.length >= this.brushOptions.maxHistoriesLength) {
 			this.histories.shift();
@@ -274,6 +276,7 @@ export default class Brush {
 			timestamp: Date.now()
 		});
 		this.historiesIndex++;
+		console.log('histories >> ', this.histories, this.historiesIndex);
 	}
 
 
