@@ -85,9 +85,10 @@ static clipboard(value: string): Promise<unknown>;
 /**
  * 时间倒计时
  * @param options 配置项
+ * @param options.timeStamp 剩余时间戳，单位秒
+ * @param options.mode      倒计时模式 default/标准时间，seconds/秒，为 seconds 时，超过 60s 不会转成分，小于 10 时不添加前置位“0”
+ * @param options.type      倒计时类型 default/秒制；ms/毫秒制
  * @param options.format    返回格式 dd hh:mm:ss，不传则返回元组类型[天,时,分,秒,毫秒]
- * @param options.mode      倒计时模式 default/标准时间；seconds/秒，为 seconds 时，超过 60s 不会转成分，小于 10 时不添加前置位“0”
- * @param options.type      倒计时格式 default/秒制；ms/毫秒制
  * @param options.showDay   是否显示天 true-超过24小时天数+1；false-超过24小时累计小时值，默认为true
  * @param options.pending   倒计时持续状态
  * @param options.complete  倒计时结束
@@ -95,13 +96,13 @@ static clipboard(value: string): Promise<unknown>;
  */
 static timeDown(options: {
     timeStamp: number;
-    format?: string;
     mode?: 'default' | 'seconds';
     type?: 'default' | 'ms';
+    format?: string;
     showDay?: boolean;
     pending: (time: string | string[]) => void;
     complete: () => void;
-}): number | undefined;
+}): () => void;
 /**
  * 获取数据类型
  * @param target
@@ -168,18 +169,17 @@ static getDays(options?: {
 /**
  * 批量下载（导出）文件
  *
- * 是用 blob 流式下载时，需要注意以下几点：
- * 1. 需要处理跨域问题：如果服务器没有设置合适的CORS策略，可能会阻止JavaScript访问文件。因此，需要确保服务器允许跨域请求。
- * 2. 需要处理文件格式问题：不同的浏览器可能对不同的文件格式支持程度不同。因此，需要确保服务器提供的文件格式兼容各种浏览器，
- *    即指定 Content-Type。当服务器不知道文件的确切 MIME 类型时，会使用 binary/octet-stream 作为默认值，导致浏览器会
- *    将这种 MIME 类型的数据作为二进制文件进行处理，通常会提示用户下载该文件。
+ * 使用 blob 流式下载时，需要注意以下几点：
+ * 1. 处理跨域问题：如果服务器没有设置合适的CORS策略，可能会阻止JavaScript访问文件。因此，需要确保服务器允许跨域请求。
+ * 2. 处理文件格式问题：不同的浏览器可能对不同的文件格式支持程度不同。因此，需要确保服务器提供的文件格式兼容各种浏览器，即指定 Content-Type。
+ *    当服务器不知道文件的确切 MIME 类型时，会使用 binary/octet-stream 作为默认值，导致浏览器会将这种 MIME 类型的数据作为二进制文件进行处理，通常会提示用户下载该文件。
  *
  * @param urls 文件地址，在线链接
  * @param filename 文件名
  * @param mode 下载类型：link（链接） | blob（文件流），默认值 blob
  * @returns
  */
-static downloadFiles(urls: string[], filename?: string | null, mode?: 'link' | 'blob'): void;
+static downloadFiles(urls: string[], filename?: string | null, mode?: 'link' | 'blob'): Promise<void>;
 /**
  * 处理数字小于10时的格式/在小于10的数字前面拼接0
  * @param num
@@ -211,7 +211,7 @@ static getFilePath(file: File, dirName: string): string;
  * @param {string} base64String - Base64 字符串
  * @returns {Uint8Array} - 转换后的 Uint8Array
  */
-base64ToUint8Array(base64String: string): Uint8Array;
+static base64ToUint8Array(base64String: string): Uint8Array;
 /**
  * 将给定的目标（URL、文件对象或 Blob 对象）转换为 Base64 编码的字符串。
  *
@@ -225,13 +225,14 @@ base64ToUint8Array(base64String: string): Uint8Array;
  * @throws 如果目标不是有效的 URL、文件或 Blob，则抛出错误。
  *
  */
-static base64(target: string | File): Promise<unknown>;
+static base64(target: string | File | Blob): Promise<string>;
 /**
  * 动态加载script标签
  * @param src {string | string[]} 加载脚本的地址，
  * @param type {string} 默认值：text/javascript
+ * @returns
  */
-static loadScript(src: string | string[], type?: string): void;
+static loadScript(src: string | string[], type?: string): Promise<boolean>;
 /**
  * 深拷贝
  * @param source 源数据

@@ -1,5 +1,11 @@
 # @likg/tools
 
+## 2.0.4
+
+### Patch Changes
+
+- 优化timeDown 函数,改用帧动画,降低延迟
+
 ## 2.0.3
 
 ### Patch Changes

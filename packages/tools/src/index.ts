@@ -24,7 +24,7 @@ interface ITrackEs {
 class Tools {
 	// 构造单例
 	private static instance: Tools;
-	private constructor() {}
+	private constructor() { }
 	static defaultUtils() {
 		if (!this.instance) {
 			this.instance = new Tools();
@@ -227,9 +227,10 @@ class Tools {
 	/**
 	 * 时间倒计时
 	 * @param options 配置项
+	 * @param options.timeStamp 剩余时间戳，单位秒
+	 * @param options.mode      倒计时模式 default/标准时间，seconds/秒，为 seconds 时，超过 60s 不会转成分，小于 10 时不添加前置位“0”
+	 * @param options.type      倒计时类型 default/秒制；ms/毫秒制
 	 * @param options.format    返回格式 dd hh:mm:ss，不传则返回元组类型[天,时,分,秒,毫秒]
-	 * @param options.mode      倒计时模式 default/标准时间；seconds/秒，为 seconds 时，超过 60s 不会转成分，小于 10 时不添加前置位“0”
-	 * @param options.type      倒计时格式 default/秒制；ms/毫秒制
 	 * @param options.showDay   是否显示天 true-超过24小时天数+1；false-超过24小时累计小时值，默认为true
 	 * @param options.pending   倒计时持续状态
 	 * @param options.complete  倒计时结束
@@ -237,14 +238,13 @@ class Tools {
 	 */
 	public static timeDown(options: {
 		timeStamp: number;
-		format?: string;
 		mode?: 'default' | 'seconds';
 		type?: 'default' | 'ms';
+		format?: string;
 		showDay?: boolean;
 		pending: (time: string | string[]) => void;
 		complete: () => void;
-	}) {
-		// -- 解构参数
+	}): () => void {
 		const {
 			timeStamp,
 			format,
@@ -254,16 +254,17 @@ class Tools {
 			pending,
 			complete
 		} = options;
-		// -- 定义变量
+
 		let counter = timeStamp;
-		let t: number;
 		const interval = type === 'default' ? 1000 : 100;
-		// -- 处理时间格式
+		let lastTime = performance.now();
+		let animationFrameId: number;
+
 		const f = (n: number | string) => {
 			if (mode === 'seconds') return String(n);
-			return Number(n) < 10 ? '0' + n : String(n);
+			return String(n).padStart(2, '0');
 		};
-		// -- 按标准倒计时处理
+
 		const calcForDefault = () => {
 			const day = showDay ? f(Math.floor(counter / 1000 / 60 / 60 / 24)) : '';
 			const hours = showDay
@@ -273,7 +274,6 @@ class Tools {
 			const seconds = f(Math.floor((counter / 1000) % 60));
 			const millisecond = f(Math.floor((counter % 1000) / 100));
 			let res: string | string[] = '';
-			// 判断是否格式返回
 			if (format) {
 				res = format
 					.replace(/dd/gi, day)
@@ -286,12 +286,12 @@ class Tools {
 				if (type === 'ms') res = [day, hours, minutes, seconds, millisecond];
 			}
 			if (counter <= 0) {
-				clearInterval(t);
 				complete();
 			} else {
 				pending(res);
 			}
 		};
+
 		const calcForSeconds = () => {
 			const seconds = f(Math.floor(counter / 1000));
 			const millisecond = f(Math.floor((counter % 1000) / 100));
@@ -303,25 +303,41 @@ class Tools {
 				if (type === 'ms') res = [seconds, millisecond];
 			}
 			if (counter <= 0) {
-				clearInterval(t);
 				complete();
 			} else {
 				pending(res);
 			}
 		};
+
+		const tick = (currentTime: number) => {
+			const deltaTime = currentTime - lastTime;
+			if (deltaTime >= interval) {
+				counter -= deltaTime;
+				lastTime = currentTime;
+				if (mode === 'default') calcForDefault();
+				if (mode === 'seconds') calcForSeconds();
+			}
+			if (counter > 0) {
+				animationFrameId = requestAnimationFrame(tick);
+			} else {
+				complete();
+			}
+		};
+
 		if (counter <= 0) {
 			complete();
 		} else {
-			const tick = () => {
-				counter -= interval;
-				if (mode === 'default') calcForDefault();
-				if (mode === 'seconds') calcForSeconds();
-			};
 			if (mode === 'default') calcForDefault();
 			if (mode === 'seconds') calcForSeconds();
-			t = setInterval(tick, interval);
-			return t;
+			animationFrameId = requestAnimationFrame(tick);
 		}
+
+		// 返回销毁函数
+		return () => {
+			if (animationFrameId) {
+				cancelAnimationFrame(animationFrameId);
+			}
+		};
 	}
 
 	/**
