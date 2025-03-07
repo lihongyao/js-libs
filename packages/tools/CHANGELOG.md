@@ -1,5 +1,11 @@
 # @likg/tools
 
+## 2.0.5
+
+### Patch Changes
+
+- 修复定时器
+
 ## 2.0.4
 
 ### Patch Changes

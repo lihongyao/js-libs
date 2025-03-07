@@ -245,15 +245,7 @@ class Tools {
 		pending: (time: string | string[]) => void;
 		complete: () => void;
 	}): () => void {
-		const {
-			timeStamp,
-			format,
-			mode = 'default',
-			type = 'default',
-			showDay = true,
-			pending,
-			complete
-		} = options;
+		const { timeStamp, format, mode = 'default', type = 'default', showDay = true, pending, complete } = options;
 
 		let counter = timeStamp;
 		const interval = type === 'default' ? 1000 : 100;
@@ -267,29 +259,18 @@ class Tools {
 
 		const calcForDefault = () => {
 			const day = showDay ? f(Math.floor(counter / 1000 / 60 / 60 / 24)) : '';
-			const hours = showDay
-				? f(Math.floor((counter / 1000 / 60 / 60) % 24))
-				: f(Math.floor(counter / 1000 / 60 / 60));
+			const hours = showDay ? f(Math.floor((counter / 1000 / 60 / 60) % 24)) : f(Math.floor(counter / 1000 / 60 / 60));
 			const minutes = f(Math.floor((counter / 1000 / 60) % 60));
 			const seconds = f(Math.floor((counter / 1000) % 60));
 			const millisecond = f(Math.floor((counter % 1000) / 100));
 			let res: string | string[] = '';
 			if (format) {
-				res = format
-					.replace(/dd/gi, day)
-					.replace(/hh/gi, hours)
-					.replace(/mm/gi, minutes)
-					.replace(/ss/gi, seconds)
-					.replace(/ms/gi, millisecond);
+				res = format.replace(/dd/gi, day).replace(/hh/gi, hours).replace(/mm/gi, minutes).replace(/ss/gi, seconds).replace(/ms/gi, millisecond);
 			} else {
 				if (type === 'default') res = [day, hours, minutes, seconds];
 				if (type === 'ms') res = [day, hours, minutes, seconds, millisecond];
 			}
-			if (counter <= 0) {
-				complete();
-			} else {
-				pending(res);
-			}
+			pending(res);
 		};
 
 		const calcForSeconds = () => {
@@ -302,20 +283,19 @@ class Tools {
 				if (type === 'default') res = [seconds];
 				if (type === 'ms') res = [seconds, millisecond];
 			}
-			if (counter <= 0) {
-				complete();
-			} else {
-				pending(res);
-			}
+			pending(res);
 		};
 
-		const tick = (currentTime: number) => {
+		const tick = () => {
+			const currentTime = performance.now();
 			const deltaTime = currentTime - lastTime;
 			if (deltaTime >= interval) {
-				counter -= deltaTime;
+				counter -= interval;
 				lastTime = currentTime;
-				if (mode === 'default') calcForDefault();
-				if (mode === 'seconds') calcForSeconds();
+				if (counter > 0) {
+					if (mode === 'default') calcForDefault();
+					if (mode === 'seconds') calcForSeconds();
+				}
 			}
 			if (counter > 0) {
 				animationFrameId = requestAnimationFrame(tick);
