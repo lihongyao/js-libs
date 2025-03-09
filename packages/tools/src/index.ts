@@ -443,33 +443,7 @@ class Tools {
 		}
 	}
 
-	/**
-	 * Blob流转Excel
-	 * @param data 流
-	 * @param fileName 导出文件名
-	 */
-	public static exportExcel(data: Blob, fileName: string) {
-		return new Promise((resolve, reject) => {
-			if (
-				[
-					'application/vnd.ms-excel',
-					'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-				].indexOf(data.type) !== -1
-			) {
-				const blob = new Blob([data], { type: 'application/xlsx' });
-				const objectURL = URL.createObjectURL(blob);
-				let a: HTMLAnchorElement | null = document.createElement('a');
-				a.download = fileName + '.xlsx';
-				a.href = objectURL;
-				a.click();
-				URL.revokeObjectURL(objectURL);
-				a = null;
-				resolve(1);
-			} else {
-				reject(0);
-			}
-		});
-	}
+
 	/**
 	 * 获取年份集合
 	 * @param start 开始年/默认值：1970
@@ -525,26 +499,19 @@ class Tools {
 	}
 
 	/**
-	 * 批量下载（导出）文件
-	 *
-	 * 使用 blob 流式下载时，需要注意以下几点：
-	 * 1. 处理跨域问题：如果服务器没有设置合适的CORS策略，可能会阻止JavaScript访问文件。因此，需要确保服务器允许跨域请求。
-	 * 2. 处理文件格式问题：不同的浏览器可能对不同的文件格式支持程度不同。因此，需要确保服务器提供的文件格式兼容各种浏览器，即指定 Content-Type。
-	 *    当服务器不知道文件的确切 MIME 类型时，会使用 binary/octet-stream 作为默认值，导致浏览器会将这种 MIME 类型的数据作为二进制文件进行处理，通常会提示用户下载该文件。
-	 *
-	 * @param urls 文件地址，在线链接
-	 * @param filename 文件名
-	 * @param mode 下载类型：link（链接） | blob（文件流），默认值 blob
-	 * @returns
-	 */
+ * 批量下载（导出）文件
+ *
+ * @param resources 资源数组，每个资源包含 source（string | Blob）和可选的 filename
+ * @param mode 下载类型：link（链接） | blob（文件流），默认值 blob
+ * @returns Promise<void>
+ */
 	public static async downloadFiles(
-		urls: string[],
-		filename?: string | null,
-		mode: 'link' | 'blob' = 'blob'
-	) {
+		resources: Array<{ source: string | Blob; filename?: string }>,
+		mode: 'link' | 'blob' = 'blob',
+	): Promise<void> {
 		// -- 异常处理
-		if (!urls || urls.length === 0) {
-			throw new Error('downloadFiles：urls 缺失或无下载资源');
+		if (!resources || resources.length === 0) {
+			throw new Error('downloadFiles：resources 缺失或无下载资源');
 		}
 
 		// -- 下载方法
@@ -561,33 +528,106 @@ class Tools {
 			}
 		};
 
+		// -- MIME 类型到扩展名的映射表
+		const mimeToExtension: { [key: string]: string } = {
+			// 常见文档类型
+			'application/pdf': '.pdf',
+			'application/msword': '.doc',
+			'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+				'.docx',
+			'application/vnd.ms-excel': '.xls',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+				'.xlsx',
+			'application/vnd.ms-powerpoint': '.ppt',
+			'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+				'.pptx',
+			'text/plain': '.txt',
+			'text/csv': '.csv',
+			'application/json': '.json',
+			'application/xml': '.xml',
+			'application/zip': '.zip',
+			'application/x-rar-compressed': '.rar',
+			'application/x-tar': '.tar',
+			'application/x-7z-compressed': '.7z',
+
+			// 常见图片类型
+			'image/jpeg': '.jpg',
+			'image/png': '.png',
+			'image/gif': '.gif',
+			'image/svg+xml': '.svg',
+			'image/webp': '.webp',
+			'image/bmp': '.bmp',
+			'image/tiff': '.tiff',
+
+			// 常见音频类型
+			'audio/mpeg': '.mp3',
+			'audio/wav': '.wav',
+			'audio/ogg': '.ogg',
+			'audio/aac': '.aac',
+			'audio/webm': '.webm',
+
+			// 常见视频类型
+			'video/mp4': '.mp4',
+			'video/mpeg': '.mpeg',
+			'video/ogg': '.ogv',
+			'video/webm': '.webm',
+			'video/x-msvideo': '.avi',
+			'video/quicktime': '.mov',
+			'video/x-matroska': '.mkv',
+
+			// 其他常见类型
+			'application/octet-stream': '.bin',
+			'application/x-binary': '.bin',
+			'application/x-download': '.bin',
+		};
+
+		// -- 根据 MIME 类型获取文件扩展名
+		const getExtensionFromMimeType = (mimeType: string): string => {
+			return mimeToExtension[mimeType] || '.bin'; // 如果找不到，默认使用 .bin
+		};
+
 		// -- 生成文件名
 		const generateFilename = (
-			url: string,
-			index: number,
-			filename?: string | null
+			source: string | Blob,
+			filename?: string,
 		): string => {
 			let __filename: string;
 
-			const urlObj = new URL(url);
-			const pathname = urlObj.pathname;
-
 			if (filename) {
+				// 如果传入了 filename，直接使用它
 				__filename = filename;
-				if (urls.length > 1) __filename += index + 1;
-			} else {
+			} else if (typeof source === 'string') {
+				// 如果 source 是字符串，从 URL 中提取文件名
+				const urlObj = new URL(source);
+				const pathname = urlObj.pathname;
 				const start = pathname.lastIndexOf('/') + 1;
 				const end =
 					pathname.lastIndexOf('.') !== -1
 						? pathname.lastIndexOf('.')
 						: pathname.length;
 				__filename = pathname.slice(start, end);
+			} else {
+				// 如果 source 是 Blob，使用默认文件名
+				__filename = 'file';
 			}
 
-			const dotIndex = pathname.lastIndexOf('.');
-			const extension = dotIndex !== -1 ? pathname.slice(dotIndex) : '.bin';
+			// 根据 source 的类型动态设置后缀
+			let extension: string;
+			if (typeof source === 'string') {
+				// 从 URL 中提取后缀
+				const urlObj = new URL(source);
+				extension = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('.'));
+			} else {
+				// 根据 Blob 的 MIME 类型设置后缀
+				extension = getExtensionFromMimeType(source.type);
+			}
 
-			return __filename + extension;
+			// 如果 __filename 已经包含后缀，则不再添加
+			if (__filename.endsWith(extension)) {
+				return __filename;
+			} else {
+				return __filename + extension;
+			}
 		};
 
 		// -- 转换成 blob 并下载
@@ -605,18 +645,26 @@ class Tools {
 		};
 
 		// -- 批量下载
-		const downloadPromises = urls.map((url, index) => {
-			const __filename = generateFilename(url, index, filename);
-			if (mode === 'blob') {
-				return convertToBlob(url, __filename);
+		const downloadPromises = resources.map((resource) => {
+			const { source, filename } = resource;
+			const __filename = generateFilename(source, filename);
+
+			if (typeof source === 'string') {
+				if (mode === 'blob') {
+					return convertToBlob(source, __filename);
+				} else {
+					download(source, __filename);
+					return Promise.resolve();
+				}
 			} else {
-				download(url, __filename);
+				download(URL.createObjectURL(source), __filename);
 				return Promise.resolve();
 			}
 		});
 
 		await Promise.all(downloadPromises);
 	}
+
 
 	/**
 	 * 处理数字小于10时的格式/在小于10的数字前面拼接0

@@ -1,5 +1,11 @@
 # @likg/tools
 
+## 2.0.6
+
+### Patch Changes
+
+- 移除 exportExcel 函数，扩展 downloadFiles
+
 ## 2.0.5
 
 ### Patch Changes
