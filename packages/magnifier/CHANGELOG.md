@@ -1,5 +1,11 @@
 # @likg/magnifier
 
+## 1.0.7
+
+### Patch Changes
+
+- 升级依赖,使用 html2canvas-pro 替代 html2canvas
+
 ## 1.0.6
 
 ### Patch Changes

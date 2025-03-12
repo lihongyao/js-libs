@@ -1,6 +1,5 @@
 import './index.css';
-// @ts-ignore
-import html2canvas from './html2canvas.esm';
+import html2canvas from './html2canvas-pro.esm';
 
 // @See https://github.com/niklasvh/html2canvas/releases
 
