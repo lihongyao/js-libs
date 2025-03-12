@@ -118,7 +118,7 @@ export default class Magnifier {
 	 */
 	mount = () => {
 		// -- 移除容器（避免重复调用挂载函数）
-		this.container && this.destroy();
+		if (this.container) this.destroy();
 		// -- 禁止页面滚动
 		document.body.style.overflow = 'hidden';
 		// -- 创建必要元素
@@ -240,12 +240,12 @@ export default class Magnifier {
 				this.container?.appendChild(this.screenshots);
 				// -- 更新视图
 				this._updateScaleImg();
-				this.debug && this._downloadScreenshots();
+				if (this.debug) this._downloadScreenshots();
 				// -- 移除 loading
-				this.loadingEl && this.loadingEl.remove();
+				this.loadingEl?.remove();
 			})
 			.catch((error: Error) => {
-				this.onError && this.onError(error);
+				this.onError?.(error);
 				if (this.loadingEl) {
 					this.loadingEl.innerHTML = `
             <div class="${this.prefixCls}__loading-text">加载失败，请稍后再试</div>
