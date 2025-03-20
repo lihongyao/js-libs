@@ -174,12 +174,14 @@ static getDays(options?: {
  * 2. 处理文件格式问题：不同的浏览器可能对不同的文件格式支持程度不同。因此，需要确保服务器提供的文件格式兼容各种浏览器，即指定 Content-Type。
  *    当服务器不知道文件的确切 MIME 类型时，会使用 binary/octet-stream 作为默认值，导致浏览器会将这种 MIME 类型的数据作为二进制文件进行处理，通常会提示用户下载该文件。
  *
- * @param urls 文件地址，在线链接
- * @param filename 文件名
- * @param mode 下载类型：link（链接） | blob（文件流），默认值 blob
+ * @param resources  资源数组，Array<{ source: string | Blob; filename?: string }>
+ * @param mode 下载类型：link｜blob，默认值 blob
  * @returns
  */
-static downloadFiles(urls: string[], filename?: string | null, mode?: 'link' | 'blob'): Promise<void>;
+static downloadFiles(resources: Array<{
+    source: string | Blob;
+    filename?: string;
+}>, mode?: 'link' | 'blob'): Promise<void>;
 /**
  * 处理数字小于10时的格式/在小于10的数字前面拼接0
  * @param num

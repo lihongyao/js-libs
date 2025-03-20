@@ -499,19 +499,27 @@ class Tools {
 	}
 
 	/**
- * 批量下载（导出）文件
- *
- * @param resources 资源数组，每个资源包含 source（string | Blob）和可选的 filename
- * @param mode 下载类型：link（链接） | blob（文件流），默认值 blob
- * @returns Promise<void>
- */
+	 * 批量下载（导出）文件
+	 * 
+	 * 使用 blob 流式下载时，需要注意以下几点：
+	 * 1. 处理跨域问题：如果服务器没有设置合适的CORS策略，可能会阻止JavaScript访问文件。因此，需要确保服务器允许跨域请求。
+	 * 2. 处理文件格式问题：不同的浏览器可能对不同的文件格式支持程度不同。因此，需要确保服务器提供的文件格式兼容各种浏览器，即指定 Content-Type。
+	 *    当服务器不知道文件的确切 MIME 类型时，会使用 binary/octet-stream 作为默认值，导致浏览器会将这种 MIME 类型的数据作为二进制文件进行处理，通常会提示用户下载该文件。
+	 *
+	 * @param resources  资源数组，Array<{ source: string | Blob; filename?: string }>
+	 * @param mode 下载类型：link｜blob，默认值 blob
+	 * @returns 
+	 */
 	public static async downloadFiles(
-		resources: Array<{ source: string | Blob; filename?: string }>,
+		resources: Array<{
+			source: string | Blob;
+			filename?: string
+		}>,
 		mode: 'link' | 'blob' = 'blob',
 	): Promise<void> {
 		// -- 异常处理
 		if (!resources || resources.length === 0) {
-			throw new Error('downloadFiles：resources 缺失或无下载资源');
+			throw new Error('[downloadFiles]：未传入下载源');
 		}
 
 		// -- 下载方法
@@ -524,7 +532,7 @@ class Tools {
 			a.click();
 			document.body.removeChild(a);
 			if (mode === 'blob') {
-				URL.revokeObjectURL(href);
+				setTimeout(() => URL.revokeObjectURL(href), 1000); // 延迟释放 Blob URL，确保下载完成后再释放。
 			}
 		};
 
@@ -533,14 +541,11 @@ class Tools {
 			// 常见文档类型
 			'application/pdf': '.pdf',
 			'application/msword': '.doc',
-			'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-				'.docx',
+			'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
 			'application/vnd.ms-excel': '.xls',
-			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-				'.xlsx',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
 			'application/vnd.ms-powerpoint': '.ppt',
-			'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-				'.pptx',
+			'application/vnd.openxmlformats-officedocument.presentationml.presentation': '.pptx',
 			'text/plain': '.txt',
 			'text/csv': '.csv',
 			'application/json': '.json',
@@ -578,69 +583,56 @@ class Tools {
 			// 其他常见类型
 			'application/octet-stream': '.bin',
 			'application/x-binary': '.bin',
-			'application/x-download': '.bin',
+			'application/x-download': '.bin'
 		};
 
 		// -- 根据 MIME 类型获取文件扩展名
 		const getExtensionFromMimeType = (mimeType: string): string => {
-			return mimeToExtension[mimeType] || '.bin'; // 如果找不到，默认使用 .bin
+			return mimeToExtension[mimeType] || '.bin';
 		};
 
 		// -- 生成文件名
-		const generateFilename = (
-			source: string | Blob,
-			filename?: string,
-		): string => {
-			let __filename: string;
+		const generateFilename = (source: string | Blob, filename?: string): string => {
+			// -- 文件名
+			let __filename = filename ?? 'file';
+			let __extension = '.bin';
 
-			if (filename) {
-				// 如果传入了 filename，直接使用它
-				__filename = filename;
-			} else if (typeof source === 'string') {
-				// 如果 source 是字符串，从 URL 中提取文件名
+			if (typeof source === 'string') {
 				const urlObj = new URL(source);
 				const pathname = urlObj.pathname;
-				const start = pathname.lastIndexOf('/') + 1;
-				const end =
-					pathname.lastIndexOf('.') !== -1
-						? pathname.lastIndexOf('.')
-						: pathname.length;
-				__filename = pathname.slice(start, end);
+
+				// 如果没有提供文件名，则从 URL 的路径中提取文件名
+				if (!filename) {
+					const start = pathname.lastIndexOf('/') + 1;
+					const end = pathname.lastIndexOf('.') !== -1 ? pathname.lastIndexOf('.') : pathname.length;
+					__filename = pathname.slice(start, end);
+				}
+
+				// 获取扩展名
+				const dotIndex = pathname.lastIndexOf('.');
+				if (dotIndex !== -1 && dotIndex < pathname.length - 1) {
+					__extension = pathname.slice(dotIndex);
+				}
 			} else {
-				// 如果 source 是 Blob，使用默认文件名
-				__filename = 'file';
+				// 获取 Blob 类型的扩展名
+				__extension = getExtensionFromMimeType(source.type);
 			}
 
-			// 根据 source 的类型动态设置后缀
-			let extension: string;
-			if (typeof source === 'string') {
-				// 从 URL 中提取后缀
-				const urlObj = new URL(source);
-				extension = urlObj.pathname.slice(urlObj.pathname.lastIndexOf('.'));
-			} else {
-				// 根据 Blob 的 MIME 类型设置后缀
-				extension = getExtensionFromMimeType(source.type);
-			}
-
-			// 如果 __filename 已经包含后缀，则不再添加
-			if (__filename.endsWith(extension)) {
-				return __filename;
-			} else {
-				return __filename + extension;
-			}
+			// -- 拼接文件名和扩展名
+			return __filename.endsWith(__extension) ? __filename : __filename + __extension;
 		};
 
 		// -- 转换成 blob 并下载
 		const convertToBlob = async (url: string, filename: string) => {
 			try {
-				const response = await fetch(url, { mode: 'cors' }); // Ensure CORS is enabled
+				const response = await fetch(url, { mode: 'cors' });
 				if (!response.ok) {
-					throw new Error('downloadFiles：无法读取文件数据');
+					throw new Error(`[downloadFiles]：下载失败，HTTP ${response.status} ${response.statusText}`);
 				}
 				const blobData = await response.blob();
 				download(URL.createObjectURL(blobData), filename);
 			} catch (error: any) {
-				throw new Error('downloadFiles：' + error.message);
+				throw new Error(`[downloadFiles]：下载失败，${error.message}`);
 			}
 		};
 
@@ -662,7 +654,13 @@ class Tools {
 			}
 		});
 
-		await Promise.all(downloadPromises);
+		await Promise.allSettled(downloadPromises).then((results) => {
+			results.forEach((result, index) => {
+				if (result.status === 'rejected') {
+					console.warn(`[downloadFiles]：下载失败，${resources[index].source}`, result.reason);
+				}
+			});
+		});
 	}
 
 
