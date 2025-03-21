@@ -44,7 +44,7 @@ static convertToFormDataWith(object: Record<string, any>): FormData;
 /**
  * 处理日期格式
  * @param v  时间戳 / 日期字符串 / 日期对象
- * @param format 格式 YYYY-MM-DD HH:mm:ss
+ * @param format 格式 YYYY-MM-DD HH:mm:ss dddd
  */
 static dateFormat(v: number | string | Date, format?: string): string;
 /**
@@ -173,6 +173,7 @@ static getDays(options?: {
  * 1. 处理跨域问题：如果服务器没有设置合适的CORS策略，可能会阻止JavaScript访问文件。因此，需要确保服务器允许跨域请求。
  * 2. 处理文件格式问题：不同的浏览器可能对不同的文件格式支持程度不同。因此，需要确保服务器提供的文件格式兼容各种浏览器，即指定 Content-Type。
  *    当服务器不知道文件的确切 MIME 类型时，会使用 binary/octet-stream 作为默认值，导致浏览器会将这种 MIME 类型的数据作为二进制文件进行处理，通常会提示用户下载该文件。
+ * 3. 部分浏览器无法下载：可能是因为浏览器会发送两次请求，第一次，HEAD 请求，判断文件是否存在，第二次，发送 GET 请求，下载文件。因此安全规则需要加入 HEAD 请求和 GET 请求。
  *
  * @param resources  资源数组，Array<{ source: string | Blob; filename?: string }>
  * @param mode 下载类型：link｜blob，默认值 blob

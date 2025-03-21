@@ -101,21 +101,19 @@ class Tools {
 	/**
 	 * 处理日期格式
 	 * @param v  时间戳 / 日期字符串 / 日期对象
-	 * @param format 格式 YYYY-MM-DD HH:mm:ss
+	 * @param format 格式 YYYY-MM-DD HH:mm:ss dddd
 	 */
-	public static dateFormat(v: number | string | Date, format?: string) {
+	public static dateFormat(v: number | string | Date, format: string = 'YYYY-MM-DD HH:mm:ss') {
 		// 格式处理
-		function formatNumber(n: number | string) {
-			n = n.toString();
-			return n[1] ? n : '0' + n;
-		}
+		const padZero = (n: number | string): string => n.toString().padStart(2, '0');
 
+		// 处理 iOS 日期格式兼容性问题
 		// 由于 iOS 在微信小程序中不支持 2024-01-01 00:00:00 创建日期
 		// 因此需要特殊处理将参数转换为成 2024/01/01 00:00:00 格式
-		const reg = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
-		if (typeof v === 'string' && reg.test(v)) {
+		if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(v)) {
 			v = v.replace(/-/g, '/');
 		}
+
 
 		// 尝试使用 Date 对象进行解析
 		const date = new Date(v);
@@ -123,27 +121,27 @@ class Tools {
 			return '-';
 		}
 
-		// 获取年月日、时分秒
+		// 获取日期各部分
 		const year = date.getFullYear().toString();
-		const month = formatNumber(date.getMonth() + 1);
-		const day = formatNumber(date.getDate());
-		const hour = formatNumber(date.getHours());
-		const minute = formatNumber(date.getMinutes());
-		const second = formatNumber(date.getSeconds());
-		// 判断是否存在格式
-		if (format) {
-			return format
-				.replace(/YYYY/gi, year)
-				.replace(/MM/, month)
-				.replace(/DD/, day)
-				.replace(/HH/, hour)
-				.replace(/mm/, minute)
-				.replace(/ss/, second);
-		}
-		let res = '';
-		res += year + '-' + month + '-' + day + ' ';
-		res += hour + ':' + minute + ':' + second;
-		return res;
+		const month = padZero(date.getMonth() + 1);
+		const day = padZero(date.getDate());
+		const hour = padZero(date.getHours());
+		const minute = padZero(date.getMinutes());
+		const second = padZero(date.getSeconds());
+
+		// 获取中文星期几
+		const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+		const dayOfWeek = weekdays[date.getDay()];
+
+		// 替换格式化字符串中的占位符
+		return format
+			.replace(/YYYY/gi, year)
+			.replace(/MM/, month)
+			.replace(/DD/, day)
+			.replace(/HH/, hour)
+			.replace(/mm/, minute)
+			.replace(/ss/, second)
+			.replace(/dddd/, dayOfWeek);
 	}
 
 	/**
@@ -505,6 +503,7 @@ class Tools {
 	 * 1. 处理跨域问题：如果服务器没有设置合适的CORS策略，可能会阻止JavaScript访问文件。因此，需要确保服务器允许跨域请求。
 	 * 2. 处理文件格式问题：不同的浏览器可能对不同的文件格式支持程度不同。因此，需要确保服务器提供的文件格式兼容各种浏览器，即指定 Content-Type。
 	 *    当服务器不知道文件的确切 MIME 类型时，会使用 binary/octet-stream 作为默认值，导致浏览器会将这种 MIME 类型的数据作为二进制文件进行处理，通常会提示用户下载该文件。
+	 * 3. 部分浏览器无法下载：可能是因为浏览器会发送两次请求，第一次，HEAD 请求，判断文件是否存在，第二次，发送 GET 请求，下载文件。因此安全规则需要加入 HEAD 请求和 GET 请求。	
 	 *
 	 * @param resources  资源数组，Array<{ source: string | Blob; filename?: string }>
 	 * @param mode 下载类型：link｜blob，默认值 blob

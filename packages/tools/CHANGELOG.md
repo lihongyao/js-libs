@@ -1,5 +1,11 @@
 # @likg/tools
 
+## 2.0.8
+
+### Patch Changes
+
+- 日期格式化函数新增堆周几的支持
+
 ## 2.0.7
 
 ### Patch Changes
