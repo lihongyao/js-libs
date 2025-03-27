@@ -50,8 +50,9 @@ self.webView.UIDelegate = self;
 H5开发通过如下方式安装本库：
 
 ```shell
-$ npm install lg-js-bridge
-$ yarn add lg-js-bridge
+$ npm install @likg/js-bridge
+$ yarn add @likg/js-bridge
+$ pnpm add @likg/js-bridge
 ```
 
 # 使用
@@ -59,7 +60,7 @@ $ yarn add lg-js-bridge
 这里以获取Token为例：
 
 ```js
-import jsBridge from 'lg-js-bridge';
+import jsBridge from '@likg/js-bridge';
 
 const token = jsBridge.getToken();
 ```

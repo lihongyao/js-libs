@@ -16,15 +16,11 @@ class JSBridge {
 	 */
 	private static getEnv() {
 		const ua = window.navigator.userAgent;
-		if (/MicroMessenger/i.test(ua)) {
-			return 'weixin';
-		} else if (/Linux|Android/i.test(ua)) {
-			return 'android';
-		} else if (/iPhone/i.test(ua)) {
-			return 'ios';
-		} else {
-			return 'unknown';
-		}
+		if (/MicroMessenger/i.test(ua)) return 'weixin';
+		else if (/Linux|Android|Adr/i.test(ua)) return 'android';
+		else if (/iPhone/i.test(ua)) return 'ios';
+		else if (/HarmonyOS/i.test(ua)) return 'harmony';
+		else return 'unknown';
 	}
 
 	public static jsTest(options: any) {
@@ -39,7 +35,7 @@ class JSBridge {
 	 * 调用原生方法通信
 	 * @param options
 	 * options.fn 原生方法名
-	 * options.data H5传递给原生的参数/如果没有则传递null
+	 * options.data H5传递给原生的参数，默认值为null
 	 * options.iOSPrompt 处理iOS同步返回
 	 */
 	private static call(options: {
@@ -48,7 +44,7 @@ class JSBridge {
 		iOSPrompt?: PromptType;
 	}) {
 		// 1. 获取传递参数
-		let payload = options.data;
+		let payload = options.data ?? null;
 		// 2. 如果没有值，则赋值为null
 		if (options.data === undefined) {
 			payload = null;
@@ -85,13 +81,16 @@ class JSBridge {
 	 ************************************************/
 
 	/**
-	 * 1. 跳转微信小程序
-	 * @param {*} options
+	 * 跳转微信小程序
+	 * @param {Object} options
+	 * @param {String} options.userName 小程序原始id
+	 * @param {String} [options.path] 拉起小程序页面的可带参路径，不填默认拉起小程序首页
+	 * @param {Number} [options.miniprogramType=0] 打开类型；0：正式版，1：开发版，2：体验版
 	 */
 	public static launchMiniProgram(options: {
-		userName: string /** 小程序原始id */;
-		path: string /** 拉起小程序页面的可带参路径，不填默认拉起小程序首页 */;
-		miniprogramType: 0 | 1 | 2 /** 打开类型；0：正式版，1：开发版，2：体验版 */;
+		userName: string;
+		path?: string;
+		miniprogramType?: 0 | 1 | 2;
 	}) {
 		JSBridge.call({
 			fn: 'launchMiniProgram',
@@ -100,13 +99,18 @@ class JSBridge {
 	}
 
 	/**
-	 * 2. H5调用原生支付
+	 * H5调用原生支付
+	 * @param {Object} params
+	 * @param {String} params.callback 支付回调H5函数名
+	 * @param {String} params.payType 支付类型（这里需要和原生约定类型，如：微信支付 - WX_PAY，支付宝支付 - ALI_PAY，苹果支付 - APPLE_PAY）
+	 * @param {String} params.payStr 支付参数（这里需要和后台沟通，将原生拉起支付的参数以JSON字符串形式返回，到时直接传递给原生并由原生解析即可）
+	 * @param {String} [params.orderNo] 订单号（有时原生调用支付回调函数之后，H5这边需要通过订单号查询支付状态，所以这里将订单号传给原生，原生在回调时作为参数回传给H5使用）
 	 */
 	public static payment(params: {
-		callback: string /** 支付回调H5函数名 */;
-		payType: string /** 支付类型（这里需要和原生约定类型，如：微信支付 - WX_PAY，支付宝支付 - ALI_PAY，苹果支付 - APPLE_PAY） */;
-		payStr: string /** 支付参数（这里需要和后台沟通，将原生拉起支付的参数以JSON字符串形式返回，到时直接传递给原生并由原生解析即可） */;
-		orderNo?: string /** 订单号（有时原生调用支付回调函数之后，H5这边需要通过订单号查询支付状态，所以这里将订单号传给原生，原生在回调时作为参数回传给H5使用） */;
+		callback: string;
+		payType: string;
+		payStr: string;
+		orderNo?: string;
 	}) {
 		JSBridge.call({
 			fn: 'payment',
@@ -115,16 +119,24 @@ class JSBridge {
 	}
 
 	/**
-	 * 3. H5调用原生分享
+	 * H5调用原生分享
+	 * @param {Object} options
+	 * @param {Number} options.type 分享类型： 0 文字，1 图片，2 网页链接，3 视频连接，4 小程序
+	 * @param {String} [options.title] 标题（可选）
+	 * @param {String} [options.link] 网页链接（可选）
+	 * @param {String} [options.text] 文字内容/网页链接描述（可选）
+	 * @param {String} [options.videoUrl] 视频连接地址（可选）
+	 * @param {String} [options.imageUrl] 图片链接地址/网页链接缩略图（可选）
+	 * @param {String} [options.imageBase64] 图片base64（可选）
 	 */
 	public static shareWith(options: {
-		type: number /** 分享类型： 0 文字 / 1 图片 / 2 网页链接 / 3 视频连接 / 4 小程序 */;
-		title?: string /** 标题（可选） */;
-		link?: string /** 网页链接（可选） */;
-		text?: string /** 文字内容/网页链接描述（可选） */;
-		videoUrl?: string /** 视频连接地址（可选） */;
-		imageUrl?: string /** 图片链接地址/网页链接缩略图（可选） */;
-		imageBase64?: string /** 图片base64（可选） */;
+		type: number;
+		title?: string;
+		link?: string;
+		text?: string;
+		videoUrl?: string;
+		imageUrl?: string;
+		imageBase64?: string;
 	}) {
 		JSBridge.call({
 			fn: 'shareWith',
@@ -144,8 +156,9 @@ class JSBridge {
 	}
 
 	/**
-	 * 5. 保存视频至手机相册
-	 * @param {string} videoUrls 视频地址集合/这里将视频的在线链接放入集合传递给原生进行保存
+	 * 保存视频至手机相册
+	 * @param {string[]} videoUrls 视频地址集合/这里将视频的在线链接放入集合传递给原生进行保存
+	 * @description 保存视频的在线链接到手机相册，以便用户可以在相册中查看和分享
 	 */
 	public static saveVideos(videoUrls: string[]) {
 		JSBridge.call({
@@ -155,7 +168,8 @@ class JSBridge {
 	}
 
 	/**
-	 * 6. 通知原生返回上一页（原生pop控制器）
+	 * 通知原生返回上一页（原生pop控制器）
+	 * @description 该方法可以使原生pop控制器返回上一页
 	 */
 	public static nativeBack() {
 		JSBridge.call({
@@ -164,10 +178,11 @@ class JSBridge {
 	}
 
 	/**
-	 * 7. 通知原生绑定平台
-	 * @param options
-	 * @param options.platform 平台：WX/ALIPAY
-	 * @param options.callback 微信绑定之后的回调函数
+	 * 通知原生绑定平台
+	 * @description 该方法通知原生绑定平台，需要H5传递平台和回调函数给原生
+	 * @param {Object} options
+	 * @param {String} options.platform 平台：WX/ALIPAY
+	 * @param {String} options.callback 微信绑定之后的回调函数
 	 */
 	public static bindPlatform(options: {
 		platform: 'WX' | 'ALIPAY';
@@ -180,8 +195,11 @@ class JSBridge {
 	}
 
 	/**
-	 * 8. 通知原生打开APP
+	 * 通知原生打开APP
 	 * @param appTag APP标识
+	 * @description 该方法可以让原生打开对应的APP，例如微信/QQ
+	 * @example
+	 * JSBridge.openApp('WX'); // 打开微信
 	 */
 	public static openApp(appTag: 'WX' | 'QQ') {
 		JSBridge.call({
