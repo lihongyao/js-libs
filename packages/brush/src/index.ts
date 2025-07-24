@@ -105,7 +105,6 @@ export default class Brush {
 		return `BRUSH_${year}${month}${day}${hour}${minute}${seconds}.jpg`;
 	}
 
-
 	/**
 	 * 获取非行间样式
 	 * @param el
@@ -225,7 +224,8 @@ export default class Brush {
 		let parentElement = element.offsetParent;
 		const rect = { left: element.offsetLeft, top: element.offsetTop };
 		while (parentElement) {
-			const { offsetLeft, offsetTop, offsetParent } = parentElement as HTMLElement;
+			const { offsetLeft, offsetTop, offsetParent } =
+				parentElement as HTMLElement;
 			rect.left += offsetLeft;
 			rect.top += offsetTop;
 			parentElement = offsetParent;
@@ -278,7 +278,6 @@ export default class Brush {
 		this.historiesIndex++;
 		console.log('histories >> ', this.histories, this.historiesIndex);
 	}
-
 
 	/**
 	 * 挂载画笔工具
@@ -347,9 +346,15 @@ export default class Brush {
 
 		// -- 事件监听
 		// -- Mobile
-		canvas.addEventListener('touchstart', this._drawBegin.bind(this), { passive: false });
-		canvas.addEventListener('touchmove', this._drawing.bind(this), { passive: false });
-		canvas.addEventListener('touchend', this._drawEnd.bind(this), { passive: false });
+		canvas.addEventListener('touchstart', this._drawBegin.bind(this), {
+			passive: false
+		});
+		canvas.addEventListener('touchmove', this._drawing.bind(this), {
+			passive: false
+		});
+		canvas.addEventListener('touchend', this._drawEnd.bind(this), {
+			passive: false
+		});
 		// -- PC
 		canvas.addEventListener('mousedown', this._drawBegin.bind(this));
 		canvas.addEventListener('mousemove', this._drawing.bind(this));
@@ -478,7 +483,11 @@ export default class Brush {
 		if (!this.canvas) return;
 		// -- 解构
 		const defaultFilename = this._getDefaultFilename();
-		const { filename = defaultFilename, type = 'image/jpg', quality = 75 } = options || {};
+		const {
+			filename = defaultFilename,
+			type = 'image/jpg',
+			quality = 75
+		} = options || {};
 		// -- 获取画板链接
 		const url = this.canvas.toDataURL(type, quality);
 		// -- 模拟点击下载

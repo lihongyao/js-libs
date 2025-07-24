@@ -1,4 +1,4 @@
-# lg-tools
+# 概述
 
 常用工具函数
 
@@ -6,16 +6,14 @@
 
 ```shell
 $ npm install @likg/tools
-# OR
 $ yarn add @likg/tools
-# OR
 $ pnpm add @likg/tools
 ```
 
 # 使用
 
 ```typescript
-import Tools from '@likg/tools';
+import Tools from '@likg/tools'
 ```
 
 # API

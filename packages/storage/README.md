@@ -1,12 +1,12 @@
-# Storage
+# 概述
 
 为了方便对JSAPI LocalStorage的使用，这里封装lg-storage库简化操作。
 
 ```shell
 # 安装
-$ yarn add @likg/storage
-# OR
 $ npm install @likg/storage
+$ yarn add @likg/storage
+$ pnpm add @likg/storage
 ```
 
 # API

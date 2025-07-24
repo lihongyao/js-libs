@@ -1,5 +1,11 @@
 # @likg/match-line
 
+## 2.0.0
+
+### Major Changes
+
+- 文档更新
+
 ## 1.0.13
 
 ### Patch Changes

@@ -1,14 +1,14 @@
-import { defineConfig } from 'rollup';
-import { generateRollupConfig, getPkgNames } from './utils';
+import { defineConfig } from 'rollup'
+import { generateRollupConfig, getPkgNames } from './utils'
 
-const libs = ['tools'];
-const rollupConfigs = [];
+const libs = ['storage', 'tools','validator', 'websocket', ]
+const rollupConfigs = []
 
-const pkgNames = libs.length ? libs : getPkgNames();
+const pkgNames = libs.length ? libs : getPkgNames()
 
-pkgNames.forEach((pkgName) => {
-	const pkgConfig = generateRollupConfig(pkgName);
-	rollupConfigs.push(pkgConfig);
-});
+pkgNames.forEach(pkgName => {
+  const pkgConfig = generateRollupConfig(pkgName)
+  rollupConfigs.push(pkgConfig)
+})
 
-export default defineConfig(rollupConfigs);
+export default defineConfig(rollupConfigs)

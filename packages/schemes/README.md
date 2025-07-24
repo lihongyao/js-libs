@@ -1,4 +1,4 @@
-# 一、概述
+# 概述
 
 Scheme是一种页面内跳转协议，通过定义自己的Scheme协议，可以非常方便的跳转APP中的各个页面，Scheme格式如下：
 
@@ -15,7 +15,7 @@ Scheme是一种页面内跳转协议，通过定义自己的Scheme协议，可�
 
 比如，我们公司产品 [D豆（DDOU）] 应用定义的Scheme协议就为：`ddou://www.d-dou.com` 。
 
-# 二、初衷
+# 初衷
 
 为了方便H5开发者使用，提高开发效率，所以空闲时间开发了 `lg-schemes` 库。
 
@@ -74,20 +74,20 @@ Scheme是一种页面内跳转协议，通过定义自己的Scheme协议，可�
 
    其中，url为需要原生打开的H5地址（外部链接）
 
-# 三、安装
+# 安装
 
 ```shell
-$ npm install lg-schemes
-# OR
-$ yarn add lg-schemes
+$ npm install @likg/schemes
+$ yarn add @likg/schemes
+$ pnpm add @likg/schemes
 ```
 
-# 四、使用
+# 使用
 
 使用之前，你需要全局配置scheme
 
 ```tsx
-import Schemes from 'lg-schemes';
+import Schemes from '@likg/schemes';
 
 Schemes.config('scheme地址', '二级目录地址');
 ```

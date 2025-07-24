@@ -5,9 +5,9 @@
 # 安装
 
 ```shell
-$ npm i @likg/match-line
-$ pnpm i @likg/match-line
+$ npm install @likg/match-line
 $ yarn add @likg/match-line
+$ pnpm add @likg/match-line
 ```
 
 ```tsx

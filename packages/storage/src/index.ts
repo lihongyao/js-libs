@@ -20,7 +20,7 @@ class Storage {
 	 * @param key 键
 	 * @returns
 	 */
-	public static get<T = any>(key: string): T | undefined {
+	public static get<T = any>(key: string): T | void {
 		const data = localStorage.getItem(key);
 		if (data) {
 			return JSON.parse(data) as T;

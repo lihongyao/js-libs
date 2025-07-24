@@ -8,12 +8,14 @@
 $ npm install @likg/classnames
 # OR
 $ yarn add @likg/classnames
+# OR
+$ pnpm add @likg/classnames
 ```
 
 # 使用
 
 ```javascript
-import classNames from 'lg-classnames';
+import classNames from '@likg/classnames';
 
 // 1. 传入字符串
 classNames('bar foo  '); // bar foo

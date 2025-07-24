@@ -6,12 +6,14 @@
 $ npm install @likg/cookie
 # OR
 $ yarn add @likg/cookie
+# OR
+$ pnpm add @likg/cookie
 ```
 
 使用
 
 ```tsx
-import Cookie from 'lg-cookie';
+import Cookie from '@likg/cookie';
 // 1. 查询所有
 Cookie.get();
 // 2. 查询指定值

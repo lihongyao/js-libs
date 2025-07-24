@@ -1,15 +1,15 @@
 {
 	"name": "@likg/tools",
-	"version": "2.0.8",
+	"version": "2.0.9",
 	"description": "常用工具函数",
 	"type": "module",
-	"types": "./dist/index.d.ts",
+	"types": "./dist/types/index.d.ts",
 	"main": "./dist/index.cjs.js",
 	"module": "./dist/index.esm.js",
 	"exports": {
 		"import": "./dist/index.esm.js",
 		"require": "./dist/index.cjs.js",
-		"types": "./dist/index.d.ts"
+		"types": "./dist/types/index.d.ts"
 	},
 	"buildOptions": {
 		"formats": [
@@ -25,16 +25,16 @@
 		"README.md"
 	],
 	"keywords": [
-		"Schemes"
+		"工具函数"
 	],
-	"author": "",
+	"author": "lee",
 	"license": "ISC",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/lihongyao/lg-libs.git"
+		"url": "https://github.com/lihongyao/js-libs"
 	},
 	"bugs": {
-		"url": "https://github.com/lihongyao/lg-libs/issues"
+		"url": "https://github.com/lihongyao/js-libs/issues"
 	},
-	"homepage": "https://github.com/lihongyao/lg-libs.git#readme"
+	"homepage": "https://github.com/lihongyao/js-libs/tree/main/packages/tools"
 }

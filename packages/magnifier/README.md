@@ -1,6 +1,8 @@
 # 安装
 
 ```shell
+$ npm install @likg/magnifier
+$ yarn add @likg/magnifier
 $ pnpm add @likg/magnifier
 ```
 

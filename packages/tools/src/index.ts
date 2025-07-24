@@ -103,17 +103,22 @@ class Tools {
 	 * @param v  时间戳 / 日期字符串 / 日期对象
 	 * @param format 格式 YYYY-MM-DD HH:mm:ss dddd
 	 */
-	public static dateFormat(v: number | string | Date, format: string = 'YYYY-MM-DD HH:mm:ss') {
+	public static dateFormat(
+		v: number | string | Date,
+		format: string = 'YYYY-MM-DD HH:mm:ss'
+	) {
 		// 格式处理
 		const padZero = (n: number | string): string => n.toString().padStart(2, '0');
 
 		// 处理 iOS 日期格式兼容性问题
 		// 由于 iOS 在微信小程序中不支持 2024-01-01 00:00:00 创建日期
 		// 因此需要特殊处理将参数转换为成 2024/01/01 00:00:00 格式
-		if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(v)) {
+		if (
+			typeof v === 'string' &&
+			/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(v)
+		) {
 			v = v.replace(/-/g, '/');
 		}
-
 
 		// 尝试使用 Date 对象进行解析
 		const date = new Date(v);
@@ -512,7 +517,7 @@ class Tools {
 	public static async downloadFiles(
 		resources: Array<{
 			source: string | Blob;
-			filename?: string
+			filename?: string;
 		}>,
 		mode: 'link' | 'blob' = 'blob',
 	): Promise<void> {

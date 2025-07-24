@@ -1,5 +1,11 @@
 # @likg/tools
 
+## 2.0.9
+
+### Patch Changes
+
+- 文档更新
+
 ## 2.0.8
 
 ### Patch Changes

@@ -4,6 +4,8 @@
 
 ```shell
 $ npm install @likg/websocket
+$ yarn add @likg/websocket
+$ pnpm add @likg/websocket
 ```
 
 调用语法：

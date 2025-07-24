@@ -9,7 +9,7 @@
 # 安装
 
 ```shell
-$ pnpm install @likg/brush
+$ pnpm add @likg/brush
 ```
 
 # 使用

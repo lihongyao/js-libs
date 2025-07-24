@@ -1,15 +1,15 @@
 {
 	"name": "@likg/js-bridge",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Cookie APIs",
 	"type": "module",
-	"types": "./dist/index.d.ts",
+	"types": "./dist/types/index.d.ts",
 	"main": "./dist/index.cjs.js",
 	"module": "./dist/index.esm.js",
 	"exports": {
 		"import": "./dist/index.esm.js",
 		"require": "./dist/index.cjs.js",
-		"types": "./dist/index.d.ts"
+		"types": "./dist/types/index.d.ts"
 	},
 	"buildOptions": {
 		"formats": [
@@ -18,23 +18,27 @@
 			"umd",
 			"esm"
 		],
-		"moduleName": "jsBridge"
+		"moduleName": "JSBridge"
 	},
 	"files": [
 		"dist/**/*",
 		"README.md"
 	],
 	"keywords": [
-		"Schemes"
+		"jsBridge",
+		"js-bridge",
+		"原生交互",
+		"H5交互",
+		"原生与H5交互"
 	],
-	"author": "",
+	"author": "lee",
 	"license": "ISC",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/lihongyao/lg-libs.git"
+		"url": "https://github.com/lihongyao/js-libs"
 	},
 	"bugs": {
-		"url": "https://github.com/lihongyao/lg-libs/issues"
+		"url": "https://github.com/lihongyao/js-libs/issues"
 	},
-	"homepage": "https://github.com/lihongyao/lg-libs.git#readme"
+	"homepage": "https://github.com/lihongyao/js-libs/tree/main/packages/js-bridge"
 }

@@ -1,5 +1,11 @@
 # @likg/brush
 
+## 1.0.4
+
+### Patch Changes
+
+- 配置更新
+
 ## 1.0.3
 
 ### Patch Changes

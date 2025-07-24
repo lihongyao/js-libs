@@ -1,19 +1,21 @@
-# lg-bus
+# 概述
 
 类似于eventBus，使用发布订阅者模式实现事件分发中心。
 
 # 安装
 
 ```shell
-$ npm i lg-bus
+$ npm install --save-dev @likg/bus
 # OR
-$ yarn add lg-bus
+$ yarn add @likg/bus
+# OR
+$ pnpm add @likg/bus
 ```
 
 # 导入
 
 ```typescript
-import Bus from 'lg-bus';
+import Bus from '@likg/bus';
 ```
 
 # 使用

@@ -8,9 +8,7 @@
 
 ```shell
 $ npm install @likg/validator
-# OR
 $ yarn add @likg/validator
-# OR
 $ pnpm i @likg/validator
 ```
 

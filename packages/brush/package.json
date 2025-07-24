@@ -1,15 +1,15 @@
 {
 	"name": "@likg/brush",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"description": "画笔工具",
 	"type": "module",
-	"types": "./dist/index.d.ts",
+	"types": "./dist/types/index.d.ts",
 	"main": "./dist/index.cjs.js",
 	"module": "./dist/index.esm.js",
 	"exports": {
 		"import": "./dist/index.esm.js",
 		"require": "./dist/index.cjs.js",
-		"types": "./dist/index.d.ts"
+		"types": "./dist/types/index.d.ts"
 	},
 	"buildOptions": {
 		"formats": [
@@ -18,7 +18,7 @@
 			"umd",
 			"esm"
 		],
-		"moduleName": "Storage"
+		"moduleName": "Brush"
 	},
 	"files": [
 		"dist/**/*",
@@ -29,14 +29,14 @@
 		"画板",
 		"canvas"
 	],
-	"author": "",
+	"author": "lee",
 	"license": "ISC",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/lihongyao/lg-libs.git"
+		"url": "https://github.com/lihongyao/js-libs"
 	},
 	"bugs": {
-		"url": "https://github.com/lihongyao/lg-libs/issues"
+		"url": "https://github.com/lihongyao/js-libs/issues"
 	},
-	"homepage": "https://github.com/lihongyao/lg-libs.git#readme"
+	"homepage": "https://github.com/lihongyao/js-libs/tree/main/packages/brush"
 }
