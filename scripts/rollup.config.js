@@ -1,7 +1,7 @@
 import { defineConfig } from 'rollup'
 import { generateRollupConfig, getPkgNames } from './utils'
 
-const libs = ['storage', 'tools','validator', 'websocket', ]
+const libs = ['storage' ]
 const rollupConfigs = []
 
 const pkgNames = libs.length ? libs : getPkgNames()
