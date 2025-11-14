@@ -1,6 +1,6 @@
-import './index.css';
-// @ts-ignore
-import html2canvas from './html2canvas-pro.esm';
+import "./index.css";
+// @ts-expect-error
+import html2canvas from "./html2canvas-pro.esm";
 
 // @See https://github.com/niklasvh/html2canvas/releases
 
@@ -52,7 +52,7 @@ export default class Magnifier {
 	private onError?: (error: Error) => void;
 
 	/** 类名前缀 */
-	private prefixCls = 'Lg-magnifier';
+	private prefixCls = "Lg-magnifier";
 	/** 标识当前是否激活缩放状态 */
 	private isResizing = false;
 	/** 标识是否从放大镜【左侧】/【顶部】激活缩放状态，用于判断是否需要更新位置 */
@@ -93,12 +93,12 @@ export default class Magnifier {
 			maxSize = { width: 1000, height: 600 },
 			resizeSpacing = 20,
 			scaleRatio = 1.5,
-			borderColor = '#7B68EE',
+			borderColor = "#7B68EE",
 			allowTaint = true,
 			useCORS = true,
 			proxy,
 			debug = false,
-			onError
+			onError,
 		} = options || {};
 		// -- 赋值配置项
 		this.initialSize = initialSize;
@@ -120,7 +120,7 @@ export default class Magnifier {
 		// -- 移除容器（避免重复调用挂载函数）
 		if (this.container) this.destroy();
 		// -- 禁止页面滚动
-		document.body.style.overflow = 'hidden';
+		document.body.style.overflow = "hidden";
 		// -- 创建必要元素
 		this._createElement();
 		// -- 计算放大镜初始位置（屏幕正中间）
@@ -130,18 +130,18 @@ export default class Magnifier {
 		// -- 获取屏幕截图
 		this._getScreenshots();
 		// -- 绑定事件（触发开始拖拽/缩放）
-		this.dragBox?.addEventListener('mousedown', this._onDragStart);
-		this.magnifier?.addEventListener('mousedown', this._onResizeStart);
+		this.dragBox?.addEventListener("mousedown", this._onDragStart);
+		this.magnifier?.addEventListener("mousedown", this._onResizeStart);
 	};
 	/**
 	 * 销毁放大镜（失活）
 	 */
 	destroy = () => {
 		// -- 恢复视窗
-		document.body.style.overflow = 'auto';
+		document.body.style.overflow = "auto";
 		// -- 移除事件
-		this.dragBox?.removeEventListener('mousedown', this._onDragStart);
-		this.magnifier?.removeEventListener('mousedown', this._onResizeStart);
+		this.dragBox?.removeEventListener("mousedown", this._onDragStart);
+		this.magnifier?.removeEventListener("mousedown", this._onResizeStart);
 		// -- 移除容器
 		this.container?.remove();
 
@@ -172,13 +172,13 @@ export default class Magnifier {
 	 */
 	private _downloadScreenshots = () => {
 		if (!this.screenshots) return;
-		const objUrl = this.screenshots.toDataURL('image/jpeg');
-		const a = document.createElement('a');
-		a.setAttribute('target', '_blank');
-		a.setAttribute('href', objUrl);
-		a.setAttribute('download', 'IMG__' + Date.now());
-		const clickEvent = document.createEvent('MouseEvents');
-		clickEvent.initEvent('click', true, true);
+		const objUrl = this.screenshots.toDataURL("image/jpeg");
+		const a = document.createElement("a");
+		a.setAttribute("target", "_blank");
+		a.setAttribute("href", objUrl);
+		a.setAttribute("download", `IMG__${Date.now()}`);
+		const clickEvent = document.createEvent("MouseEvents");
+		clickEvent.initEvent("click", true, true);
 		a.dispatchEvent(clickEvent);
 	};
 
@@ -190,8 +190,8 @@ export default class Magnifier {
 		const rect = this.magnifier.getBoundingClientRect();
 		const x = (window.innerWidth - rect.width) / 2;
 		const y = (window.innerHeight - rect.height) / 2;
-		this.magnifier.style.left = x + 'px';
-		this.magnifier.style.top = y + 'px';
+		this.magnifier.style.left = `${x}px`;
+		this.magnifier.style.top = `${y}px`;
 	};
 
 	/**
@@ -203,8 +203,8 @@ export default class Magnifier {
 		const rect = this.cropBox.getBoundingClientRect();
 		const x = (window.innerWidth - rect.width) / 2;
 		const y = (window.innerHeight - rect.height) / 2;
-		this.cropBox.style.left = x + 'px';
-		this.cropBox.style.top = y + 'px';
+		this.cropBox.style.left = `${x}px`;
+		this.cropBox.style.top = `${y}px`;
 	};
 	/**
 	 * 获取屏幕截图
@@ -214,7 +214,7 @@ export default class Magnifier {
 		// -- 基于 html2canvas 截取屏幕
 		html2canvas(document.body, {
 			// 背景颜色
-			backgroundColor: '#FFF',
+			backgroundColor: "#FFF",
 			// 加载图片的超时时间
 			imageTimeout: 60 * 1000,
 			// 渲染比例，默认为浏览器设备像素比
@@ -231,11 +231,11 @@ export default class Magnifier {
 			// canvas 的宽度
 			width: window.innerWidth,
 			// canvas 的高度
-			height: window.innerHeight
+			height: window.innerHeight,
 		})
 			.then((canvas: HTMLCanvasElement) => {
 				// -- 屏幕截图
-				canvas.classList.add(this.prefixCls + '__screenshots');
+				canvas.classList.add(`${this.prefixCls}__screenshots`);
 				this.screenshots = canvas;
 				this.container?.appendChild(this.screenshots);
 				// -- 更新视图
@@ -261,49 +261,49 @@ export default class Magnifier {
 	 */
 	private _createElement = () => {
 		// 1. 创建外层容器（遮罩层）
-		const container = document.createElement('div');
-		container.setAttribute('data-html2canvas-ignore', 'true');
+		const container = document.createElement("div");
+		container.setAttribute("data-html2canvas-ignore", "true");
 		container.classList.add(this.prefixCls);
 		this.container = container;
 		// 2. 创建裁剪元素
-		const cropBox = document.createElement('div');
-		cropBox.style.width = this.initialSize.width / this.scaleRatio + 'px';
-		cropBox.style.height = this.initialSize.height / this.scaleRatio + 'px';
-		cropBox.classList.add(this.prefixCls + '__cropBox');
+		const cropBox = document.createElement("div");
+		cropBox.style.width = `${this.initialSize.width / this.scaleRatio}px`;
+		cropBox.style.height = `${this.initialSize.height / this.scaleRatio}px`;
+		cropBox.classList.add(`${this.prefixCls}__cropBox`);
 		this.cropBox = cropBox;
 		// 3. 创建放大镜元素 & 缩放区域元素
-		const magnifier = document.createElement('div');
-		magnifier.style.width = this.initialSize.width + 'px';
-		magnifier.style.height = this.initialSize.height + 'px';
+		const magnifier = document.createElement("div");
+		magnifier.style.width = `${this.initialSize.width}px`;
+		magnifier.style.height = `${this.initialSize.height}px`;
 		magnifier.style.borderColor = this.borderColor;
-		magnifier.classList.add(this.prefixCls + '__magnifier');
+		magnifier.classList.add(`${this.prefixCls}__magnifier`);
 		this.magnifier = magnifier;
 
 		// 4. 创建加载元素
-		const loadingEl = document.createElement('div');
-		loadingEl.classList.add(this.prefixCls + '__loading');
+		const loadingEl = document.createElement("div");
+		loadingEl.classList.add(`${this.prefixCls}__loading`);
 		this.loadingEl = loadingEl;
 
-		const loadingText = document.createElement('div');
-		loadingText.classList.add(this.prefixCls + '__loading-text');
-		loadingText.textContent = '视图加载中，请稍候';
+		const loadingText = document.createElement("div");
+		loadingText.classList.add(`${this.prefixCls}__loading-text`);
+		loadingText.textContent = "视图加载中，请稍候";
 
-		const loadingCircle = document.createElement('div');
-		loadingCircle.classList.add(this.prefixCls + '__loading-circle');
+		const loadingCircle = document.createElement("div");
+		loadingCircle.classList.add(`${this.prefixCls}__loading-circle`);
 
 		loadingEl.appendChild(loadingCircle);
 		loadingEl.appendChild(loadingText);
 
 		// 5. 创建拖拽区域元素
-		const dragBox = document.createElement('div');
-		dragBox.classList.add(this.prefixCls + '__dragBox');
-		dragBox.style.width = 'calc(100% - ' + this.resizeSpacing * 2 + 'px)';
-		dragBox.style.height = 'calc(100% - ' + this.resizeSpacing * 2 + 'px)';
+		const dragBox = document.createElement("div");
+		dragBox.classList.add(`${this.prefixCls}__dragBox`);
+		dragBox.style.width = `calc(100% - ${this.resizeSpacing * 2}px)`;
+		dragBox.style.height = `calc(100% - ${this.resizeSpacing * 2}px)`;
 		this.dragBox = dragBox;
 
 		// 6. 创建放大图片
-		const scaleImg = document.createElement('img');
-		scaleImg.classList.add(this.prefixCls + '__scaleImg');
+		const scaleImg = document.createElement("img");
+		scaleImg.classList.add(`${this.prefixCls}__scaleImg`);
 		this.scaleImg = scaleImg;
 		// 7. 挂载元素
 		magnifier.appendChild(scaleImg);
@@ -314,8 +314,8 @@ export default class Magnifier {
 		document.body.appendChild(container);
 		// 7. 调试模式下，展示边框
 		if (this.debug) {
-			this.cropBox.style.border = '1px dashed red';
-			this.dragBox.style.border = '1px dashed green';
+			this.cropBox.style.border = "1px dashed red";
+			this.dragBox.style.border = "1px dashed green";
 		}
 	};
 
@@ -331,7 +331,7 @@ export default class Magnifier {
 			width: cropBoxW,
 			height: cropBoxH,
 			left: cropBoxOffsetX,
-			top: cropBoxOffsetY
+			top: cropBoxOffsetY,
 		} = this.cropBox.getBoundingClientRect();
 		// -- 根据裁剪区域的盒子信息 + 缩放比例 计算裁剪放大镜呈现内容的尺寸和位置信息
 		const croppedW = cropBoxW * this.scaleRatio;
@@ -340,10 +340,10 @@ export default class Magnifier {
 		const croppedOffsetY = cropBoxOffsetY * this.scaleRatio;
 
 		// -- 创建 canvas，用于实现裁剪功能
-		const croppedCanvas = document.createElement('canvas');
+		const croppedCanvas = document.createElement("canvas");
 		croppedCanvas.width = croppedW;
 		croppedCanvas.height = croppedH;
-		const croppedCtx = croppedCanvas.getContext('2d');
+		const croppedCtx = croppedCanvas.getContext("2d");
 		if (!croppedCtx) return;
 		// -- 关闭抗锯齿
 		croppedCtx.imageSmoothingEnabled = false;
@@ -357,10 +357,10 @@ export default class Magnifier {
 			0,
 			0,
 			croppedW,
-			croppedH
+			croppedH,
 		);
 		// -- 将裁剪后的内容转换成链接
-		const url = croppedCanvas.toDataURL('image/jpeg');
+		const url = croppedCanvas.toDataURL("image/jpeg");
 		// -- 更新放大镜呈现内容
 		this.scaleImg.src = url;
 	};
@@ -377,9 +377,9 @@ export default class Magnifier {
 		// -- 激活拖拽状态
 		this.isDragging = true;
 		// -- 监听鼠标事件
-		this.container.addEventListener('mousemove', this._onDragging);
-		this.container.addEventListener('mouseup', this._onDragEnd);
-		this.container.addEventListener('mouseleave', this._onDragEnd);
+		this.container.addEventListener("mousemove", this._onDragging);
+		this.container.addEventListener("mouseup", this._onDragEnd);
+		this.container.addEventListener("mouseleave", this._onDragEnd);
 	};
 	/**
 	 * 拖拽中
@@ -414,8 +414,8 @@ export default class Magnifier {
 			magnifierOffsetY = magnifierMaxOffsetY;
 		}
 		// -- (放大镜）更新放大镜的位置
-		this.magnifier.style.left = magnifierOffsetX + 'px';
-		this.magnifier.style.top = magnifierOffsetY + 'px';
+		this.magnifier.style.left = `${magnifierOffsetX}px`;
+		this.magnifier.style.top = `${magnifierOffsetY}px`;
 
 		// -- (裁剪区域)获取当前移动位置
 		const { width: cropBoxW, height: cropBoxH } =
@@ -437,8 +437,8 @@ export default class Magnifier {
 			cropBoxOffsetY = cropBoxMaxOffsetY;
 		}
 		// -- (裁剪区域)
-		this.cropBox.style.left = cropBoxOffsetX + 'px';
-		this.cropBox.style.top = cropBoxOffsetY + 'px';
+		this.cropBox.style.left = `${cropBoxOffsetX}px`;
+		this.cropBox.style.top = `${cropBoxOffsetY}px`;
 
 		// -- 更新放大镜内容
 		this._updateScaleImg();
@@ -451,9 +451,9 @@ export default class Magnifier {
 	private _onDragEnd = (event: MouseEvent) => {
 		event.stopPropagation();
 		this.isDragging = false;
-		this.container?.removeEventListener('mousemove', this._onDragging);
-		this.container?.removeEventListener('mouseup', this._onDragEnd);
-		this.container?.removeEventListener('mouseleave', this._onDragEnd);
+		this.container?.removeEventListener("mousemove", this._onDragging);
+		this.container?.removeEventListener("mouseup", this._onDragEnd);
+		this.container?.removeEventListener("mouseleave", this._onDragEnd);
 	};
 
 	/**
@@ -476,7 +476,7 @@ export default class Magnifier {
 		// 记录鼠标按下时放大镜距离屏幕左上角的位置，用于在向上/向左拖拽时更新放大镜的位置
 		this.originalOffset = {
 			x: event.clientX - rect.left,
-			y: event.clientY - rect.top
+			y: event.clientY - rect.top,
 		};
 
 		// 判断是否触发向上/向左缩放（因为视图相对于屏幕左上角布局，向左或向上缩放时，除了更新尺寸外，还需动态调整放大镜的位置）
@@ -489,9 +489,9 @@ export default class Magnifier {
 			this.isResizeTopLeft = false;
 		}
 
-		this.container?.addEventListener('mousemove', this._onResizing);
-		this.container?.addEventListener('mouseup', this._onReszieEnd);
-		this.container?.addEventListener('mouseleave', this._onReszieEnd);
+		this.container?.addEventListener("mousemove", this._onResizing);
+		this.container?.addEventListener("mouseup", this._onReszieEnd);
+		this.container?.addEventListener("mouseleave", this._onReszieEnd);
 	};
 
 	/**
@@ -538,27 +538,27 @@ export default class Magnifier {
 		if (this.isResizeTopLeft) {
 			const x = event.clientX - this.originalOffset.x;
 			const y = event.clientY - this.originalOffset.y;
-			this.magnifier.style.left = x + 'px';
-			this.magnifier.style.top = y + 'px';
+			this.magnifier.style.left = `${x}px`;
+			this.magnifier.style.top = `${y}px`;
 		}
 		// -- 更新放大镜尺寸
-		this.magnifier.style.width = targetWidth + 'px';
-		this.magnifier.style.height = targetHeight + 'px';
+		this.magnifier.style.width = `${targetWidth}px`;
+		this.magnifier.style.height = `${targetHeight}px`;
 
 		// -- 更新裁剪区域的尺寸和位置
 		const cropBoxW = targetWidth / this.scaleRatio;
 		const cropBoxH = targetHeight / this.scaleRatio;
 
-		this.cropBox.style.width = cropBoxW + 'px';
-		this.cropBox.style.height = cropBoxH + 'px';
+		this.cropBox.style.width = `${cropBoxW}px`;
+		this.cropBox.style.height = `${cropBoxH}px`;
 
 		const { top, left, width, height } = this.magnifier.getBoundingClientRect();
 
 		const cropBoxOffsetX = left + (width - cropBoxW) / 2;
 		const cropBoxOffsetY = top + (height - cropBoxH) / 2;
 
-		this.cropBox.style.left = cropBoxOffsetX + 'px';
-		this.cropBox.style.top = cropBoxOffsetY + 'px';
+		this.cropBox.style.left = `${cropBoxOffsetX}px`;
+		this.cropBox.style.top = `${cropBoxOffsetY}px`;
 
 		// -- 更新
 		this._updateScaleImg();
@@ -568,8 +568,8 @@ export default class Magnifier {
 	 */
 	private _onReszieEnd = () => {
 		this.isResizing = false;
-		this.container?.removeEventListener('mousemove', this._onResizing);
-		this.container?.removeEventListener('mouseup', this._onReszieEnd);
-		this.container?.removeEventListener('mouseleave', this._onReszieEnd);
+		this.container?.removeEventListener("mousemove", this._onResizing);
+		this.container?.removeEventListener("mouseup", this._onReszieEnd);
+		this.container?.removeEventListener("mouseleave", this._onReszieEnd);
 	};
 }

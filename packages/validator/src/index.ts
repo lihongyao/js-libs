@@ -1,10 +1,10 @@
 interface ICheckFileSize {
-	type: 'size';
+	type: "size";
 	maxSize: number;
 	file: File;
 }
 interface ICheckFileExtension {
-	type: 'extension';
+	type: "extension";
 	accept: string;
 	file: File;
 }
@@ -24,47 +24,47 @@ class Validator {
 	public static isIdCard(idCard: string): boolean {
 		// -- 城市代码列表，用于验证身份证的省份编码是否有效
 		const cityCodes: Record<string, string> = {
-			11: '北京',
-			12: '天津',
-			13: '河北',
-			14: '山西',
-			15: '内蒙古',
-			21: '辽宁',
-			22: '吉林',
-			23: '黑龙江',
-			31: '上海',
-			32: '江苏',
-			33: '浙江',
-			34: '安徽',
-			35: '福建',
-			36: '江西',
-			37: '山东',
-			41: '河南',
-			42: '湖北',
-			43: '湖南',
-			44: '广东',
-			45: '广西',
-			46: '海南',
-			50: '重庆',
-			51: '四川',
-			52: '贵州',
-			53: '云南',
-			54: '西藏',
-			61: '陕西',
-			62: '甘肃',
-			63: '青海',
-			64: '宁夏',
-			65: '新疆',
-			71: '台湾',
-			81: '香港',
-			82: '澳门',
-			91: '国外'
+			11: "北京",
+			12: "天津",
+			13: "河北",
+			14: "山西",
+			15: "内蒙古",
+			21: "辽宁",
+			22: "吉林",
+			23: "黑龙江",
+			31: "上海",
+			32: "江苏",
+			33: "浙江",
+			34: "安徽",
+			35: "福建",
+			36: "江西",
+			37: "山东",
+			41: "河南",
+			42: "湖北",
+			43: "湖南",
+			44: "广东",
+			45: "广西",
+			46: "海南",
+			50: "重庆",
+			51: "四川",
+			52: "贵州",
+			53: "云南",
+			54: "西藏",
+			61: "陕西",
+			62: "甘肃",
+			63: "青海",
+			64: "宁夏",
+			65: "新疆",
+			71: "台湾",
+			81: "香港",
+			82: "澳门",
+			91: "国外",
 		};
 
 		// -- 检查身份证格式是否符合15位或18位的标准
 		const isCardNo =
 			/^[1-9]\d{5}(18|19|20)?\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}(\d|X)$/.test(
-				idCard
+				idCard,
 			);
 
 		// -- 验证身份证的省份编码是否存在于城市代码列表
@@ -72,16 +72,14 @@ class Validator {
 
 		// -- 提取身份证中的生日信息并验证其合理性
 		const year =
-			idCard.length === 18
-				? +idCard.slice(6, 10)
-				: +('19' + idCard.slice(6, 8));
+			idCard.length === 18 ? +idCard.slice(6, 10) : +`19${idCard.slice(6, 8)}`;
 		const month = +idCard.slice(
 			idCard.length === 18 ? 10 : 8,
-			idCard.length === 18 ? 12 : 10
+			idCard.length === 18 ? 12 : 10,
 		);
 		const day = +idCard.slice(
 			idCard.length === 18 ? 12 : 10,
-			idCard.length === 18 ? 14 : 12
+			idCard.length === 18 ? 14 : 12,
 		);
 
 		// -- 创建生日日期对象并检查是否是有效日期，且年龄范围在3到150岁之间
@@ -97,21 +95,21 @@ class Validator {
 		const calcChecksum = (card: string): boolean => {
 			const weights = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
 			const checkDigits = [
-				'1',
-				'0',
-				'X',
-				'9',
-				'8',
-				'7',
-				'6',
-				'5',
-				'4',
-				'3',
-				'2'
+				"1",
+				"0",
+				"X",
+				"9",
+				"8",
+				"7",
+				"6",
+				"5",
+				"4",
+				"3",
+				"2",
 			];
 			const sum = card
 				.slice(0, 17)
-				.split('')
+				.split("")
 				.reduce((acc, curr, idx) => acc + +curr * weights[idx], 0);
 			return checkDigits[sum % 11] === card[17];
 		};
@@ -120,21 +118,21 @@ class Validator {
 		const toEighteenDigits = (card: string): string => {
 			if (card.length === 15) {
 				// 1. 插入'19'以扩展年份部分，使之符合18位身份证格式
-				const extendedCard = card.slice(0, 6) + '19' + card.slice(6);
+				const extendedCard = `${card.slice(0, 6)}19${card.slice(6)}`;
 
 				// 2. 定义校验码列表，用于与校验和匹配，得到校验位
 				const checkDigits = [
-					'1',
-					'0',
-					'X',
-					'9',
-					'8',
-					'7',
-					'6',
-					'5',
-					'4',
-					'3',
-					'2'
+					"1",
+					"0",
+					"X",
+					"9",
+					"8",
+					"7",
+					"6",
+					"5",
+					"4",
+					"3",
+					"2",
 				];
 
 				// 3. 定义加权因子列表，用于计算校验和
@@ -143,7 +141,7 @@ class Validator {
 				// 4. 计算加权和，将15位号码（扩展为18位的前17位）逐位乘以加权因子并求和
 				const sum = Array.from(extendedCard).reduce(
 					(acc, num, idx) => acc + +num * weights[idx],
-					0
+					0,
 				);
 
 				// 5. 通过取模得到对应的校验码
@@ -236,7 +234,7 @@ class Validator {
 	 * @returns
 	 */
 	public static isValidDate(date: Date) {
-		return date instanceof Date && !isNaN(date.getTime());
+		return date instanceof Date && !Number.isNaN(date.getTime());
 	}
 
 	/**
@@ -260,17 +258,17 @@ class Validator {
 	 * @returns
 	 */
 	public static isJSON(target: any) {
-		if (typeof target !== 'string') {
+		if (typeof target !== "string") {
 			return false;
 		}
 		try {
 			const obj = JSON.parse(target);
-			if (obj && typeof obj === 'object') {
+			if (obj && typeof obj === "object") {
 				return true;
 			} else {
 				return false;
 			}
-		} catch (e) {
+		} catch {
 			return false;
 		}
 	}
@@ -300,7 +298,7 @@ class Validator {
 		const { type, file } = options;
 
 		// 校验文件大小
-		if (type === 'size') {
+		if (type === "size") {
 			const { maxSize } = options;
 			if (file.size > maxSize * 1024 * 1024) {
 				return false;
@@ -309,22 +307,22 @@ class Validator {
 		}
 
 		// 校验文件后缀
-		if (type === 'extension') {
+		if (type === "extension") {
 			let { accept } = options;
-			const index = file.name.lastIndexOf('.');
+			const index = file.name.lastIndexOf(".");
 			if (index === -1) {
 				return false;
 			}
 			const extension = file.name.slice(index);
 			if (/image\/\*/i.test(accept)) {
-				accept = '.jpg, .jpeg, .png, .gif, .bmp, .webp, .svg';
+				accept = ".jpg, .jpeg, .png, .gif, .bmp, .webp, .svg";
 			} else if (/video\/\*/i.test(accept)) {
-				accept = '.mp4, .avi, .mkv, .mov, .wmv, .flv, .rmvb, .mpeg, .mpg';
+				accept = ".mp4, .avi, .mkv, .mov, .wmv, .flv, .rmvb, .mpeg, .mpg";
 			} else if (/audio\/\*/i.test(accept)) {
-				accept = '.mp3, .wav, .wma, .rm, .mid, .aac, .ogg';
+				accept = ".mp3, .wav, .wma, .rm, .mid, .aac, .ogg";
 			}
 			return accept
-				.split(',')
+				.split(",")
 				.map((v) => v.trim())
 				.includes(extension);
 		}
@@ -365,7 +363,7 @@ class Validator {
 	 */
 	public static isDriverLicense(license: string) {
 		return /^[A-Z]{1}[0-9]{1}[A-Z]{1}[0-9]{1}[A-Z]{1}[0-9]{1}[0-9]{2}$/.test(
-			license
+			license,
 		);
 	}
 

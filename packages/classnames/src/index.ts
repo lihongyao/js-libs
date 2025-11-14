@@ -1,10 +1,3 @@
-/*
- * @Author: Lee
- * @Date: 2023-08-17 13:24:20
- * @LastEditors: Lee
- * @LastEditTime: 2023-08-17 13:25:17
- * @Description:
- */
 /**
  * 对象类型/限制值只能是布尔类型
  */
@@ -24,7 +17,7 @@ function _getType(target: any) {
  * @param target
  */
 function _trim(target: string) {
-	return target.trim().replace(/\s+/g, ' ');
+	return target.trim().replace(/\s+/g, " ");
 }
 
 /**
@@ -38,37 +31,37 @@ function _trim(target: string) {
  */
 function classNames(v: string | (string | IObject | undefined)[] | IObject) {
 	const type = _getType(v);
-	const includes = ['string', 'object', 'array'];
+	const includes = ["string", "object", "array"];
 	// 如果传入的数据类型不是可选类型则直接返回空字符串
 	if (includes.indexOf(type) === -1) {
-		return '';
+		return "";
 	}
 	// 如果是字符串，则直接返回
-	if (type === 'string') {
+	if (type === "string") {
 		return _trim(v as string);
 	}
 	// 如果是对象类型，则遍历对象，根据对象值是true还是false来返回class
-	if (type === 'object') {
-		let r = '';
+	if (type === "object") {
+		let r = "";
 		const o = v as IObject;
 		Object.keys(o).forEach((key) => {
 			const value = o[key];
 			if (value) {
-				r += key + ' ';
+				r += `${key} `;
 			}
 		});
 		return _trim(r);
 	}
 	// 如果是数组类型，则遍历数组
-	if (type === 'array') {
-		let r = '';
+	if (type === "array") {
+		let r = "";
 		const arr = v as any[];
 		arr.forEach((item) => {
-			r += classNames(item) + ' ';
+			r += `${classNames(item)} `;
 		});
 		return _trim(r);
 	}
-	return '';
+	return "";
 }
 
 export default classNames;

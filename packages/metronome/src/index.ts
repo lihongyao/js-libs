@@ -1,4 +1,4 @@
-export type TimeSignature = '2/4' | '3/4' | '4/4' | '6/8';
+export type TimeSignature = "2/4" | "3/4" | "4/4" | "6/8";
 export type MetronomeOptions = {
 	/** BPM */
 	bpm: number;
@@ -15,7 +15,6 @@ export type StartOptions = {
 };
 
 export default class MetronomeCls {
-
 	/** 拍号信息，标识拍号的分子，表示每一小节有多少拍 */
 	private timeSigNum: number;
 	/** 每一拍的时长(单位：ms) */
@@ -37,15 +36,14 @@ export default class MetronomeCls {
 	/** 节拍回调 */
 	private onBeatChange?: (beatIndex: number) => void;
 
-
 	/**
 	 * 构造函数
 	 * @param {*} options 配置项
 	 */
 	constructor(options: MetronomeOptions) {
 		const { timeSignature, bpm, accentSoundUrl, normalSoundUrl } = options;
-		this.timeSigNum = parseInt(timeSignature.split('/')[0]) || 4;
-		this.beatDuration = 60 / bpm * 1000;
+		this.timeSigNum = parseInt(timeSignature.split("/")[0], 10) || 4;
+		this.beatDuration = (60 / bpm) * 1000;
 		this.audioContext = null;
 		this.isPlaying = false;
 		this.currentBeatIndex = 0;
@@ -57,11 +55,10 @@ export default class MetronomeCls {
 		this._preloadAudioBuffers([accentSoundUrl, normalSoundUrl]);
 	}
 
-
 	/**
 	 * 延时函数
-	 * @param callback 
-	 * @param delay 
+	 * @param callback
+	 * @param delay
 	 * @returns { clear }
 	 */
 	private _rafTimeout(callback: () => void, delay: number) {
@@ -76,7 +73,7 @@ export default class MetronomeCls {
 		}
 		rafId = requestAnimationFrame(tick);
 		return {
-			clear: () => cancelAnimationFrame(rafId)
+			clear: () => cancelAnimationFrame(rafId),
 		};
 	}
 
@@ -86,8 +83,9 @@ export default class MetronomeCls {
 	 */
 	private _getAudioContext() {
 		if (!this.audioContext) {
-			this.audioContext = new (window.AudioContext ||
-				(window as any).webkitAudioContext)();
+			this.audioContext = new (
+				window.AudioContext || (window as any).webkitAudioContext
+			)();
 		}
 		return this.audioContext;
 	}
@@ -105,9 +103,9 @@ export default class MetronomeCls {
 
 			this.preloadedBuffer = await Promise.all(urls.map(fetchAudio));
 
-			console.log('音频预加载完成！');
+			console.log("音频预加载完成！");
 		} catch (error) {
-			console.error('音频预加载失败:', error);
+			console.error("音频预加载失败:", error);
 		}
 	}
 
@@ -115,17 +113,17 @@ export default class MetronomeCls {
 	 * 解码音频数据
 	 */
 	private async _decodeAudioData() {
-		if (!this.preloadedBuffer) throw new Error('音频尚未预加载完成！');
+		if (!this.preloadedBuffer) throw new Error("音频尚未预加载完成！");
 		try {
 			const decodeAudio = (buffer: ArrayBuffer) =>
 				this._getAudioContext().decodeAudioData(buffer);
 			this.audioData = await Promise.all([
 				decodeAudio(this.preloadedBuffer[0]),
-				decodeAudio(this.preloadedBuffer[1])
+				decodeAudio(this.preloadedBuffer[1]),
 			]);
-			console.log('音频解码完成！');
+			console.log("音频解码完成！");
 		} catch (error) {
-			console.error('音频解码失败:', error);
+			console.error("音频解码失败:", error);
 		}
 	}
 	/**
@@ -140,9 +138,9 @@ export default class MetronomeCls {
 				// -- 保证音频文件在播放之前解码完成，防止未加载完成导致的错误
 				await this._decodeAudioData();
 				this.isAudioContextStarted = true;
-				console.log('AudioContext 已激活！');
+				console.log("AudioContext 已激活！");
 			} catch (error) {
-				console.error('AudioContext 激活失败:', error);
+				console.error("AudioContext 激活失败:", error);
 			}
 		}
 	}
@@ -169,12 +167,16 @@ export default class MetronomeCls {
 			const beatIndex = this.currentBeatIndex % this.timeSigNum;
 
 			// 使用 _rafTimeout 更新 UI
-			this._rafTimeout(() => {
-				this.onBeatChange?.(beatIndex)
-			}, (nextTime - now - uiSyncDelay) * 1000);
+			this._rafTimeout(
+				() => {
+					this.onBeatChange?.(beatIndex);
+				},
+				(nextTime - now - uiSyncDelay) * 1000,
+			);
 
 			// 使用 setTimeout 调度音频
-			const audioData = beatIndex === 0 ? this.audioData![0] : this.audioData![1];
+			const audioData =
+				beatIndex === 0 ? this.audioData![0] : this.audioData![1];
 			if (audioData) {
 				const source = audioContext.createBufferSource();
 				source.buffer = audioData;
@@ -189,10 +191,9 @@ export default class MetronomeCls {
 		// 使用 setTimeout 调度下一次调用
 		this.timer = setTimeout(
 			() => this._scheduleNextBeat(nextTime),
-			(scheduleAheadTime / 2) * 1000
+			(scheduleAheadTime / 2) * 1000,
 		);
 	}
-
 
 	/**
 	 * options
@@ -202,11 +203,11 @@ export default class MetronomeCls {
 	 */
 	async start(options: StartOptions) {
 		if (this.isPlaying) {
-			console.warn('节拍器已经运行中！');
+			console.warn("节拍器已经运行中！");
 			return;
 		}
 		if (!this.preloadedBuffer) {
-			console.warn('音频尚未预加载！');
+			console.warn("音频尚未预加载！");
 			return;
 		}
 		this.onBeatChange = options.onBeatChange;
@@ -214,7 +215,7 @@ export default class MetronomeCls {
 		await this._ensureAudioContextStarted();
 
 		if (!this.audioData) {
-			console.warn('音频尚未解码！');
+			console.warn("音频尚未解码！");
 			return;
 		}
 
@@ -241,7 +242,7 @@ export default class MetronomeCls {
 	 * @param {*} bpm
 	 */
 	setBPM(bpm: number) {
-		this.beatDuration = 60 / bpm * 1000;
+		this.beatDuration = (60 / bpm) * 1000;
 		this.currentBeatIndex = 0;
 		this.timer && clearTimeout(this.timer);
 		if (this.isPlaying) {
@@ -253,7 +254,7 @@ export default class MetronomeCls {
 	 * @param {*} timeSignature
 	 */
 	setTimeSignature(timeSignature: string) {
-		this.timeSigNum = parseInt(timeSignature.split('/')[0]);
+		this.timeSigNum = parseInt(timeSignature.split("/")[0], 10);
 		this.currentBeatIndex = 0;
 		this.timer && clearTimeout(this.timer);
 		if (this.isPlaying) {
@@ -270,7 +271,7 @@ export default class MetronomeCls {
 			try {
 				await this.audioContext.close();
 			} catch (error) {
-				console.warn('关闭 AudioContext 失败:', error);
+				console.warn("关闭 AudioContext 失败:", error);
 			} finally {
 				this.audioContext = null;
 			}

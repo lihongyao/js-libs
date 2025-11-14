@@ -1,10 +1,3 @@
-/*
- * @Author: Lee
- * @Date: 2023-08-17 13:22:12
- * @LastEditors: Lee
- * @LastEditTime: 2023-08-17 13:24:01
- * @Description:
- */
 type FunctionType = (...args: any[]) => void;
 
 class EventBus {
@@ -14,10 +7,10 @@ class EventBus {
 	private static instance: EventBus;
 	private constructor() {}
 	static defaultUtils() {
-		if (!this.instance) {
-			this.instance = new EventBus();
+		if (!EventBus.instance) {
+			EventBus.instance = new EventBus();
 		}
-		return this.instance;
+		return EventBus.instance;
 	}
 
 	/**

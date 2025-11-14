@@ -10,11 +10,11 @@ declare global {
 
 // 百度统计
 interface ITrackPv {
-	type: 'pv';
+	type: "pv";
 	pageURL?: string /** 指定要统计PV的页面URL。此项必选，必须是以”/”（斜杠）开头的相对路径 */;
 }
 interface ITrackEs {
-	type: 'es';
+	type: "es";
 	category: string /** 要监控的目标的类型名称，通常是同一组目标的名字，比如”视频”、”音乐”、”软件”、”游戏”等等。该项必选 */;
 	action?: string /** 用户跟目标交互的行为，如”播放”、”暂停”、”下载”等等。该项必选。 */;
 	opt_label?: string /** 事件的一些额外信息，通常可以是歌曲的名称、软件的名称、链接的名称等等。该项可选。 */;
@@ -24,12 +24,12 @@ interface ITrackEs {
 class Tools {
 	// 构造单例
 	private static instance: Tools;
-	private constructor() { }
+	private constructor() {}
 	static defaultUtils() {
-		if (!this.instance) {
-			this.instance = new Tools();
+		if (!Tools.instance) {
+			Tools.instance = new Tools();
 		}
-		return this.instance;
+		return Tools.instance;
 	}
 	/**
 	 * 获取queryString参数值
@@ -38,30 +38,30 @@ class Tools {
 	 * @returns T
 	 */
 	public static query<T = any>(key?: string | null, queryString?: string) {
-		let s = '';
+		let s = "";
 		if (queryString) {
-			s = /^http/.test(queryString) ? queryString.split('?')[1] : queryString;
+			s = /^http/.test(queryString) ? queryString.split("?")[1] : queryString;
 		} else {
 			s = window.location.search;
 		}
 		if (s) {
 			s = /\?/.test(s) ? s.slice(1) : s;
 			const o: Record<string, any> = {};
-			s.split('&').forEach((item) => {
+			s.split("&").forEach((item) => {
 				if (/=/.test(item)) {
-					const t = item.split('=');
+					const t = item.split("=");
 					const k = t[0];
 					const v = t[1];
 					o[k] = v ? decodeURIComponent(v) : undefined;
 				}
 			});
 			if (key) {
-				return (key ? (o[key] ? o[key] : '') : o) as T;
+				return (key ? (o[key] ? o[key] : "") : o) as T;
 			} else {
 				return o as T;
 			}
 		}
-		return (key ? '' : {}) as unknown as T;
+		return (key ? "" : {}) as unknown as T;
 	}
 	/**
 	 * 将对象转换为query参数
@@ -71,13 +71,13 @@ class Tools {
 	 */
 	public static convertToQueryWith(
 		obj: Record<string, string | number | boolean>,
-		hasPrefix = true
+		hasPrefix = true,
 	) {
-		if (!obj || Tools.toRawType(obj) !== 'object') return '';
-		let res = hasPrefix ? '?' : '';
+		if (!obj || Tools.toRawType(obj) !== "object") return "";
+		let res = hasPrefix ? "?" : "";
 		Object.keys(obj).forEach((key: string) => {
 			const v = obj[key];
-			res += `${key}=${v !== undefined ? encodeURIComponent(v) : ''}&`;
+			res += `${key}=${v !== undefined ? encodeURIComponent(v) : ""}&`;
 		});
 		if (res) {
 			return res.slice(0, res.length - 1);
@@ -105,25 +105,26 @@ class Tools {
 	 */
 	public static dateFormat(
 		v: number | string | Date,
-		format: string = 'YYYY-MM-DD HH:mm:ss'
+		format: string = "YYYY-MM-DD HH:mm:ss",
 	) {
 		// 格式处理
-		const padZero = (n: number | string): string => n.toString().padStart(2, '0');
+		const padZero = (n: number | string): string =>
+			n.toString().padStart(2, "0");
 
 		// 处理 iOS 日期格式兼容性问题
 		// 由于 iOS 在微信小程序中不支持 2024-01-01 00:00:00 创建日期
 		// 因此需要特殊处理将参数转换为成 2024/01/01 00:00:00 格式
 		if (
-			typeof v === 'string' &&
+			typeof v === "string" &&
 			/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(v)
 		) {
-			v = v.replace(/-/g, '/');
+			v = v.replace(/-/g, "/");
 		}
 
 		// 尝试使用 Date 对象进行解析
 		const date = new Date(v);
-		if (isNaN(date.getTime())) {
-			return '-';
+		if (Number.isNaN(date.getTime())) {
+			return "-";
 		}
 
 		// 获取日期各部分
@@ -135,7 +136,15 @@ class Tools {
 		const second = padZero(date.getSeconds());
 
 		// 获取中文星期几
-		const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+		const weekdays = [
+			"星期日",
+			"星期一",
+			"星期二",
+			"星期三",
+			"星期四",
+			"星期五",
+			"星期六",
+		];
 		const dayOfWeek = weekdays[date.getDay()];
 
 		// 替换格式化字符串中的占位符
@@ -169,13 +178,15 @@ class Tools {
 	 * @returns
 	 */
 	public static unique<T extends object>(arr: T[], key: keyof T): T[] {
-		const obj: Record<string, any> = {};
-		const res = arr.reduce((temps: T[], next: T) => {
-			const v = next[key] + '';
-			obj[v] ? '' : (obj[v] = true && temps.push(next));
-			return temps;
-		}, []);
-		return res;
+		const seen = new Set<T[keyof T]>(); // 使用 Set 存储已出现的 key 值
+		return arr.filter((item) => {
+			const value = item[key];
+			if (seen.has(value)) {
+				return false;
+			}
+			seen.add(value);
+			return true;
+		});
 	}
 
 	/**
@@ -187,16 +198,16 @@ class Tools {
 	 * @param phone 手机号
 	 * @param format 格式字符串 如：'$1 $2 $3'，默认值：$1 **** $2
 	 */
-	public static phoneFormatter(phone: string, format = '$1 **** $2') {
-		if (phone && typeof phone === 'string' && phone.length === 11) {
+	public static phoneFormatter(phone: string, format = "$1 **** $2") {
+		if (phone && typeof phone === "string" && phone.length === 11) {
 			return phone.replace(
 				/(\d{3})(\d{4})(\d{4})/,
 				(_, $1: string, $2: string, $3: string) => {
-					return format.replace('$1', $1).replace('$2', $2).replace('$3', $3);
-				}
+					return format.replace("$1", $1).replace("$2", $2).replace("$3", $3);
+				},
 			);
 		}
-		return '';
+		return "";
 	}
 	/**
 	 * px转vw
@@ -212,12 +223,12 @@ class Tools {
 	 */
 	public static clipboard(value: string) {
 		return new Promise((resolve, reject) => {
-			const input = document.createElement('input');
-			input.setAttribute('value', value);
+			const input = document.createElement("input");
+			input.setAttribute("value", value);
 			document.body.appendChild(input);
 
 			input.select();
-			const result = document.execCommand('copy');
+			const result = document.execCommand("copy");
 			document.body.removeChild(input);
 			if (result) {
 				resolve(null);
@@ -241,37 +252,52 @@ class Tools {
 	 */
 	public static timeDown(options: {
 		timeStamp: number;
-		mode?: 'default' | 'seconds';
-		type?: 'default' | 'ms';
+		mode?: "default" | "seconds";
+		type?: "default" | "ms";
 		format?: string;
 		showDay?: boolean;
 		pending: (time: string | string[]) => void;
 		complete: () => void;
 	}): () => void {
-		const { timeStamp, format, mode = 'default', type = 'default', showDay = true, pending, complete } = options;
+		const {
+			timeStamp,
+			format,
+			mode = "default",
+			type = "default",
+			showDay = true,
+			pending,
+			complete,
+		} = options;
 
 		let counter = timeStamp;
-		const interval = type === 'default' ? 1000 : 100;
+		const interval = type === "default" ? 1000 : 100;
 		let lastTime = performance.now();
 		let animationFrameId: number;
 
 		const f = (n: number | string) => {
-			if (mode === 'seconds') return String(n);
-			return String(n).padStart(2, '0');
+			if (mode === "seconds") return String(n);
+			return String(n).padStart(2, "0");
 		};
 
 		const calcForDefault = () => {
-			const day = showDay ? f(Math.floor(counter / 1000 / 60 / 60 / 24)) : '';
-			const hours = showDay ? f(Math.floor((counter / 1000 / 60 / 60) % 24)) : f(Math.floor(counter / 1000 / 60 / 60));
+			const day = showDay ? f(Math.floor(counter / 1000 / 60 / 60 / 24)) : "";
+			const hours = showDay
+				? f(Math.floor((counter / 1000 / 60 / 60) % 24))
+				: f(Math.floor(counter / 1000 / 60 / 60));
 			const minutes = f(Math.floor((counter / 1000 / 60) % 60));
 			const seconds = f(Math.floor((counter / 1000) % 60));
 			const millisecond = f(Math.floor((counter % 1000) / 100));
-			let res: string | string[] = '';
+			let res: string | string[] = "";
 			if (format) {
-				res = format.replace(/dd/gi, day).replace(/hh/gi, hours).replace(/mm/gi, minutes).replace(/ss/gi, seconds).replace(/ms/gi, millisecond);
+				res = format
+					.replace(/dd/gi, day)
+					.replace(/hh/gi, hours)
+					.replace(/mm/gi, minutes)
+					.replace(/ss/gi, seconds)
+					.replace(/ms/gi, millisecond);
 			} else {
-				if (type === 'default') res = [day, hours, minutes, seconds];
-				if (type === 'ms') res = [day, hours, minutes, seconds, millisecond];
+				if (type === "default") res = [day, hours, minutes, seconds];
+				if (type === "ms") res = [day, hours, minutes, seconds, millisecond];
 			}
 			pending(res);
 		};
@@ -279,12 +305,12 @@ class Tools {
 		const calcForSeconds = () => {
 			const seconds = f(Math.floor(counter / 1000));
 			const millisecond = f(Math.floor((counter % 1000) / 100));
-			let res: string | string[] = '';
+			let res: string | string[] = "";
 			if (format) {
 				res = format.replace(/ss/gi, seconds).replace(/ms/gi, millisecond);
 			} else {
-				if (type === 'default') res = [seconds];
-				if (type === 'ms') res = [seconds, millisecond];
+				if (type === "default") res = [seconds];
+				if (type === "ms") res = [seconds, millisecond];
 			}
 			pending(res);
 		};
@@ -296,8 +322,8 @@ class Tools {
 				counter -= interval;
 				lastTime = currentTime;
 				if (counter > 0) {
-					if (mode === 'default') calcForDefault();
-					if (mode === 'seconds') calcForSeconds();
+					if (mode === "default") calcForDefault();
+					if (mode === "seconds") calcForSeconds();
 				}
 			}
 			if (counter > 0) {
@@ -310,8 +336,8 @@ class Tools {
 		if (counter <= 0) {
 			complete();
 		} else {
-			if (mode === 'default') calcForDefault();
-			if (mode === 'seconds') calcForSeconds();
+			if (mode === "default") calcForDefault();
+			if (mode === "seconds") calcForSeconds();
 			animationFrameId = requestAnimationFrame(tick);
 		}
 
@@ -338,19 +364,19 @@ class Tools {
 	public static track(options: ITrackPv | ITrackEs) {
 		if (window._hmt) {
 			switch (options.type) {
-				case 'pv':
+				case "pv":
 					window._hmt.push([
-						'_trackPageview',
-						options.pageURL || location.pathname
+						"_trackPageview",
+						options.pageURL || location.pathname,
 					]);
 					break;
-				case 'es':
+				case "es":
 					window._hmt.push([
-						'_trackEvent',
+						"_trackEvent",
 						options.category,
-						options.action || 'click',
+						options.action || "click",
 						options.opt_label,
-						options.opt_value
+						options.opt_value,
 					]);
 					break;
 			}
@@ -363,26 +389,26 @@ class Tools {
 	 */
 	public static randomCharacters(
 		length: number,
-		type?: 'default' | 'uppercase' | 'lowercase' | 'digital'
+		type?: "default" | "uppercase" | "lowercase" | "digital",
 	) {
-		type = type || 'default';
-		let bStr = '';
+		type = type || "default";
+		let bStr = "";
 		switch (type) {
-			case 'digital':
-				bStr += '0123456789';
+			case "digital":
+				bStr += "0123456789";
 				break;
-			case 'uppercase':
-				bStr += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			case "uppercase":
+				bStr += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 				break;
-			case 'lowercase':
-				bStr += 'abcdefghijklmnopqrstuvwxyz';
+			case "lowercase":
+				bStr += "abcdefghijklmnopqrstuvwxyz";
 				break;
 			default:
-				bStr += '0123456789';
-				bStr += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-				bStr += 'abcdefghijklmnopqrstuvwxyz';
+				bStr += "0123456789";
+				bStr += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+				bStr += "abcdefghijklmnopqrstuvwxyz";
 		}
-		let rStr = '';
+		let rStr = "";
 		for (let i = 0; i < length; ++i) {
 			const index = Math.floor(Math.random() * bStr.length);
 			rStr += bStr.slice(index, index + 1);
@@ -396,7 +422,12 @@ class Tools {
 	 */
 	public static randomDecimals(min: number, max: number) {
 		// 异常处理
-		if (min === undefined || max === undefined || isNaN(min) || isNaN(max)) {
+		if (
+			min === undefined ||
+			max === undefined ||
+			Number.isNaN(min) ||
+			Number.isNaN(max)
+		) {
 			return -1;
 		} else {
 			return Math.random() * (max - min) + min;
@@ -408,7 +439,12 @@ class Tools {
 	 * @param max
 	 */
 	public static randomInteger(min: number, max: number) {
-		if (min === undefined || max === undefined || isNaN(min) || isNaN(max)) {
+		if (
+			min === undefined ||
+			max === undefined ||
+			Number.isNaN(min) ||
+			Number.isNaN(max)
+		) {
 			return -1;
 		} else {
 			return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -424,7 +460,7 @@ class Tools {
 			el.webkitRequestFullScreen ||
 			el.mozRequestFullScreen ||
 			el.msRequestFullscreen;
-		if (typeof rfs !== 'undefined' && rfs) {
+		if (typeof rfs !== "undefined" && rfs) {
 			rfs.call(el);
 		}
 		return;
@@ -440,12 +476,11 @@ class Tools {
 				el.mozCancelFullScreen ||
 				el.webkitCancelFullScreen ||
 				el.msExitFullscreen;
-			if (typeof cfs !== 'undefined' && cfs) {
+			if (typeof cfs !== "undefined" && cfs) {
 				cfs.call(el);
 			}
 		}
 	}
-
 
 	/**
 	 * 获取年份集合
@@ -455,7 +490,7 @@ class Tools {
 	 */
 	public static getYears(
 		start: number = 1970,
-		end: number = new Date().getFullYear()
+		end: number = new Date().getFullYear(),
 	) {
 		const years: string[] = [];
 		for (let i = start; i <= end; i++) {
@@ -470,7 +505,7 @@ class Tools {
 	public static getMonths() {
 		const months: string[] = [];
 		for (let i = 1; i <= 12; i++) {
-			months.push((i < 10 ? `0${i}` : i.toString()) + '月');
+			months.push(`${i < 10 ? `0${i}` : i.toString()}月`);
 		}
 		return months;
 	}
@@ -496,46 +531,46 @@ class Tools {
 			}
 		}
 		for (let i = 1; i <= max; i++) {
-			days.push((i < 10 ? `0${i}` : i.toString()) + '日');
+			days.push(`${i < 10 ? `0${i}` : i.toString()}日`);
 		}
 		return days;
 	}
 
 	/**
 	 * 批量下载（导出）文件
-	 * 
+	 *
 	 * 使用 blob 流式下载时，需要注意以下几点：
 	 * 1. 处理跨域问题：如果服务器没有设置合适的CORS策略，可能会阻止JavaScript访问文件。因此，需要确保服务器允许跨域请求。
 	 * 2. 处理文件格式问题：不同的浏览器可能对不同的文件格式支持程度不同。因此，需要确保服务器提供的文件格式兼容各种浏览器，即指定 Content-Type。
 	 *    当服务器不知道文件的确切 MIME 类型时，会使用 binary/octet-stream 作为默认值，导致浏览器会将这种 MIME 类型的数据作为二进制文件进行处理，通常会提示用户下载该文件。
-	 * 3. 部分浏览器无法下载：可能是因为浏览器会发送两次请求，第一次，HEAD 请求，判断文件是否存在，第二次，发送 GET 请求，下载文件。因此安全规则需要加入 HEAD 请求和 GET 请求。	
+	 * 3. 部分浏览器无法下载：可能是因为浏览器会发送两次请求，第一次，HEAD 请求，判断文件是否存在，第二次，发送 GET 请求，下载文件。因此安全规则需要加入 HEAD 请求和 GET 请求。
 	 *
 	 * @param resources  资源数组，Array<{ source: string | Blob; filename?: string }>
 	 * @param mode 下载类型：link｜blob，默认值 blob
-	 * @returns 
+	 * @returns
 	 */
 	public static async downloadFiles(
 		resources: Array<{
 			source: string | Blob;
 			filename?: string;
 		}>,
-		mode: 'link' | 'blob' = 'blob',
+		mode: "link" | "blob" = "blob",
 	): Promise<void> {
 		// -- 异常处理
 		if (!resources || resources.length === 0) {
-			throw new Error('[downloadFiles]：未传入下载源');
+			throw new Error("[downloadFiles]：未传入下载源");
 		}
 
 		// -- 下载方法
 		const download = (href: string, filename: string) => {
-			const a = document.createElement('a');
-			a.style.display = 'none';
+			const a = document.createElement("a");
+			a.style.display = "none";
 			a.href = href;
 			a.download = filename;
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);
-			if (mode === 'blob') {
+			if (mode === "blob") {
 				setTimeout(() => URL.revokeObjectURL(href), 1000); // 延迟释放 Blob URL，确保下载完成后再释放。
 			}
 		};
@@ -543,77 +578,86 @@ class Tools {
 		// -- MIME 类型到扩展名的映射表
 		const mimeToExtension: { [key: string]: string } = {
 			// 常见文档类型
-			'application/pdf': '.pdf',
-			'application/msword': '.doc',
-			'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
-			'application/vnd.ms-excel': '.xls',
-			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
-			'application/vnd.ms-powerpoint': '.ppt',
-			'application/vnd.openxmlformats-officedocument.presentationml.presentation': '.pptx',
-			'text/plain': '.txt',
-			'text/csv': '.csv',
-			'application/json': '.json',
-			'application/xml': '.xml',
-			'application/zip': '.zip',
-			'application/x-rar-compressed': '.rar',
-			'application/x-tar': '.tar',
-			'application/x-7z-compressed': '.7z',
+			"application/pdf": ".pdf",
+			"application/msword": ".doc",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+				".docx",
+			"application/vnd.ms-excel": ".xls",
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+				".xlsx",
+			"application/vnd.ms-powerpoint": ".ppt",
+			"application/vnd.openxmlformats-officedocument.presentationml.presentation":
+				".pptx",
+			"text/plain": ".txt",
+			"text/csv": ".csv",
+			"application/json": ".json",
+			"application/xml": ".xml",
+			"application/zip": ".zip",
+			"application/x-rar-compressed": ".rar",
+			"application/x-tar": ".tar",
+			"application/x-7z-compressed": ".7z",
 
 			// 常见图片类型
-			'image/jpeg': '.jpg',
-			'image/png': '.png',
-			'image/gif': '.gif',
-			'image/svg+xml': '.svg',
-			'image/webp': '.webp',
-			'image/bmp': '.bmp',
-			'image/tiff': '.tiff',
+			"image/jpeg": ".jpg",
+			"image/png": ".png",
+			"image/gif": ".gif",
+			"image/svg+xml": ".svg",
+			"image/webp": ".webp",
+			"image/bmp": ".bmp",
+			"image/tiff": ".tiff",
 
 			// 常见音频类型
-			'audio/mpeg': '.mp3',
-			'audio/wav': '.wav',
-			'audio/ogg': '.ogg',
-			'audio/aac': '.aac',
-			'audio/webm': '.webm',
+			"audio/mpeg": ".mp3",
+			"audio/wav": ".wav",
+			"audio/ogg": ".ogg",
+			"audio/aac": ".aac",
+			"audio/webm": ".webm",
 
 			// 常见视频类型
-			'video/mp4': '.mp4',
-			'video/mpeg': '.mpeg',
-			'video/ogg': '.ogv',
-			'video/webm': '.webm',
-			'video/x-msvideo': '.avi',
-			'video/quicktime': '.mov',
-			'video/x-matroska': '.mkv',
+			"video/mp4": ".mp4",
+			"video/mpeg": ".mpeg",
+			"video/ogg": ".ogv",
+			"video/webm": ".webm",
+			"video/x-msvideo": ".avi",
+			"video/quicktime": ".mov",
+			"video/x-matroska": ".mkv",
 
 			// 其他常见类型
-			'application/octet-stream': '.bin',
-			'application/x-binary': '.bin',
-			'application/x-download': '.bin'
+			"application/octet-stream": ".bin",
+			"application/x-binary": ".bin",
+			"application/x-download": ".bin",
 		};
 
 		// -- 根据 MIME 类型获取文件扩展名
 		const getExtensionFromMimeType = (mimeType: string): string => {
-			return mimeToExtension[mimeType] || '.bin';
+			return mimeToExtension[mimeType] || ".bin";
 		};
 
 		// -- 生成文件名
-		const generateFilename = (source: string | Blob, filename?: string): string => {
+		const generateFilename = (
+			source: string | Blob,
+			filename?: string,
+		): string => {
 			// -- 文件名
-			let __filename = filename ?? 'file';
-			let __extension = '.bin';
+			let __filename = filename ?? "file";
+			let __extension = ".bin";
 
-			if (typeof source === 'string') {
+			if (typeof source === "string") {
 				const urlObj = new URL(source);
 				const pathname = urlObj.pathname;
 
 				// 如果没有提供文件名，则从 URL 的路径中提取文件名
 				if (!filename) {
-					const start = pathname.lastIndexOf('/') + 1;
-					const end = pathname.lastIndexOf('.') !== -1 ? pathname.lastIndexOf('.') : pathname.length;
+					const start = pathname.lastIndexOf("/") + 1;
+					const end =
+						pathname.lastIndexOf(".") !== -1
+							? pathname.lastIndexOf(".")
+							: pathname.length;
 					__filename = pathname.slice(start, end);
 				}
 
 				// 获取扩展名
-				const dotIndex = pathname.lastIndexOf('.');
+				const dotIndex = pathname.lastIndexOf(".");
 				if (dotIndex !== -1 && dotIndex < pathname.length - 1) {
 					__extension = pathname.slice(dotIndex);
 				}
@@ -623,15 +667,19 @@ class Tools {
 			}
 
 			// -- 拼接文件名和扩展名
-			return __filename.endsWith(__extension) ? __filename : __filename + __extension;
+			return __filename.endsWith(__extension)
+				? __filename
+				: __filename + __extension;
 		};
 
 		// -- 转换成 blob 并下载
 		const convertToBlob = async (url: string, filename: string) => {
 			try {
-				const response = await fetch(url, { mode: 'cors' });
+				const response = await fetch(url, { mode: "cors" });
 				if (!response.ok) {
-					throw new Error(`[downloadFiles]：下载失败，HTTP ${response.status} ${response.statusText}`);
+					throw new Error(
+						`[downloadFiles]：下载失败，HTTP ${response.status} ${response.statusText}`,
+					);
 				}
 				const blobData = await response.blob();
 				download(URL.createObjectURL(blobData), filename);
@@ -645,8 +693,8 @@ class Tools {
 			const { source, filename } = resource;
 			const __filename = generateFilename(source, filename);
 
-			if (typeof source === 'string') {
-				if (mode === 'blob') {
+			if (typeof source === "string") {
+				if (mode === "blob") {
 					return convertToBlob(source, __filename);
 				} else {
 					download(source, __filename);
@@ -660,13 +708,15 @@ class Tools {
 
 		await Promise.allSettled(downloadPromises).then((results) => {
 			results.forEach((result, index) => {
-				if (result.status === 'rejected') {
-					console.warn(`[downloadFiles]：下载失败，${resources[index].source}`, result.reason);
+				if (result.status === "rejected") {
+					console.warn(
+						`[downloadFiles]：下载失败，${resources[index].source}`,
+						result.reason,
+					);
 				}
 			});
 		});
 	}
-
 
 	/**
 	 * 处理数字小于10时的格式/在小于10的数字前面拼接0
@@ -689,15 +739,15 @@ class Tools {
 	public static getEnv() {
 		const _userAgent = window.navigator.userAgent;
 		if (/MicroMessenger/i.test(_userAgent)) {
-			return 'weixin';
+			return "weixin";
 		} else if (/AlipayClient/i.test(_userAgent)) {
-			return 'alipay';
+			return "alipay";
 		} else if (/Linux|Android/i.test(_userAgent)) {
-			return 'android';
+			return "android";
 		} else if (/iPhone/i.test(_userAgent)) {
-			return 'ios';
+			return "ios";
 		} else {
-			return 'unknown';
+			return "unknown";
 		}
 	}
 	/**
@@ -720,10 +770,10 @@ class Tools {
 		// 日期目录
 		const dateDir = `${year}${formatter(month)}${formatter(date)}`; // 如：20210630
 		// 获取文件后缀
-		const suffix = file.name.split('.').slice(-1).toString();
+		const suffix = file.name.split(".").slice(-1).toString();
 		const filePath = `${dirName}/${dateDir}/${Tools.randomCharacters(
 			3,
-			'uppercase'
+			"uppercase",
 		)}${curDate.getTime()}.${suffix}`;
 		return filePath;
 	}
@@ -735,15 +785,15 @@ class Tools {
 	 */
 	public static base64ToUint8Array(base64String: string): Uint8Array {
 		// -- 移除 data: 前缀（如果存在）
-		const base64 = base64String.includes(',')
-			? base64String.split(',')[1]
+		const base64 = base64String.includes(",")
+			? base64String.split(",")[1]
 			: base64String;
 
 		// -- 补齐 Base64 字符串的长度，使其长度是4的倍数
-		const padding = '='.repeat((4 - (base64.length % 4)) % 4);
+		const padding = "=".repeat((4 - (base64.length % 4)) % 4);
 		const formattedBase64 = (base64 + padding)
-			.replace(/-/g, '+') // 替换 URL 安全的字符
-			.replace(/_/g, '/'); // 替换 URL 安全的字符
+			.replace(/-/g, "+") // 替换 URL 安全的字符
+			.replace(/_/g, "/"); // 替换 URL 安全的字符
 
 		// -- 解码 Base64 字符串
 		try {
@@ -757,8 +807,8 @@ class Tools {
 
 			return outputArray;
 		} catch (error) {
-			console.error('Failed to decode Base64 string:', error);
-			throw new Error('Invalid Base64 string');
+			console.error("Failed to decode Base64 string:", error);
+			throw new Error("Invalid Base64 string");
 		}
 	}
 
@@ -784,28 +834,28 @@ class Tools {
 					resolve(reader.result as string);
 				};
 				reader.onerror = () => {
-					reject(new Error('读取文件或Blob对象失败'));
+					reject(new Error("读取文件或Blob对象失败"));
 				};
 			};
 			if (target instanceof File || target instanceof Blob) {
 				handleFileOrBlob(target);
-			} else if (typeof target === 'string' && /http/.test(target)) {
+			} else if (typeof target === "string" && /http/.test(target)) {
 				const xhr = new XMLHttpRequest();
-				xhr.open('GET', target, true);
-				xhr.responseType = 'blob';
+				xhr.open("GET", target, true);
+				xhr.responseType = "blob";
 				xhr.onload = function () {
 					if (this.status === 200) {
 						handleFileOrBlob(this.response);
 					} else {
-						reject(new Error('请求图片失败，状态码: ' + this.status));
+						reject(new Error(`请求图片失败，状态码: ${this.status}`));
 					}
 				};
 				xhr.onerror = () => {
-					reject(new Error('请求图片失败'));
+					reject(new Error("请求图片失败"));
 				};
 				xhr.send();
 			} else {
-				reject(new Error('文件格式有误或目标类型不支持'));
+				reject(new Error("文件格式有误或目标类型不支持"));
 			}
 		});
 	}
@@ -817,12 +867,12 @@ class Tools {
 	 */
 	public static loadScript(
 		src: string | string[],
-		type = 'text/javascript'
+		type = "text/javascript",
 	): Promise<boolean> {
 		// -- 工具函数，用于加载单个脚本
 		const load = (src: string): Promise<boolean> => {
 			return new Promise((resolve) => {
-				const scriptElem = document.createElement('script');
+				const scriptElem = document.createElement("script");
 				scriptElem.type = type;
 				scriptElem.src = src;
 				scriptElem.onload = () => resolve(true);
@@ -831,26 +881,31 @@ class Tools {
 			});
 		};
 
-		return new Promise(async (resolve) => {
-			// -- 检查 src 参数有效性
-			if (!src || (Array.isArray(src) && src.length === 0)) {
-				console.log('@likg/tools: loading script error. [no params]');
-				return resolve(false);
-			}
-			// -- 确保 src 是一个数组
-			const srcList = Array.isArray(src) ? src : [src];
-			// -- 按顺序逐个加载脚本
-			for (let i = 0; i < srcList.length; i++) {
-				const isOk = await load(srcList[i]);
-				if (isOk) {
-					console.log(`🟢 脚本「${i}」加载成功，地址：${srcList[i]}`);
-				} else {
-					console.log(`🔴 脚本「${i}」加载失败，地址：${srcList[i]}`);
+		return new Promise((resolve) => {
+			(async () => {
+				// -- 检查 src 参数有效性
+				if (!src || (Array.isArray(src) && src.length === 0)) {
+					console.log("@likg/tools: loading script error. [no params]");
 					return resolve(false);
 				}
-			}
-			// -- 全部脚本按顺序加载成功
-			resolve(true);
+
+				// -- 确保 src 是一个数组
+				const srcList = Array.isArray(src) ? src : [src];
+
+				// -- 按顺序逐个加载脚本
+				for (let i = 0; i < srcList.length; i++) {
+					const isOk = await load(srcList[i]);
+					if (isOk) {
+						console.log(`🟢 脚本「${i}」加载成功，地址：${srcList[i]}`);
+					} else {
+						console.log(`🔴 脚本「${i}」加载失败，地址：${srcList[i]}`);
+						return resolve(false);
+					}
+				}
+
+				// -- 全部脚本按顺序加载成功
+				resolve(true);
+			})();
 		});
 	}
 
@@ -865,13 +920,13 @@ class Tools {
 			| Record<string, any>
 			| T;
 		// -- 判断处理
-		if (source && typeof source === 'object') {
+		if (source && typeof source === "object") {
 			for (const key in source) {
-				if (Object.prototype.hasOwnProperty.call(source, key)) {
+				if (Object.hasOwn(source, key)) {
 					// 判断 source 子元素是否为对象
 					if (
 						source[key] &&
-						typeof source[key] === 'object' &&
+						typeof source[key] === "object" &&
 						!(source[key] instanceof HTMLElement)
 					) {
 						// 如果是，递归复制
@@ -895,12 +950,12 @@ class Tools {
 	public static update<T = Record<string, any>>(
 		source: T,
 		namePath: string,
-		value: any
+		value: any,
 	) {
 		if (/\./.test(namePath)) {
 			let cash: any = source;
 			let i = 0;
-			const keys = namePath.split('.');
+			const keys = namePath.split(".");
 			while (i < keys.length - 1) {
 				const k = keys[i++];
 				if (k in cash) {
@@ -926,7 +981,7 @@ class Tools {
 	public static deepUpdate<T = Record<string, any>>(
 		source: T,
 		namePath: string,
-		value: any
+		value: any,
 	) {
 		const o = Tools.deepClone<T>(source);
 		return Tools.update<T>(o, namePath, value);
@@ -937,7 +992,7 @@ class Tools {
 	 * @returns 返回日期对象
 	 */
 	public static getLastDay() {
-		return new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+		return new Date(Date.now() - 24 * 60 * 60 * 1000);
 	}
 	/**
 	 * 获取上一月
@@ -964,7 +1019,7 @@ class Tools {
 		return (...args: any) => {
 			t && clearTimeout(t);
 			t = setTimeout(() => {
-				cb.apply(this, args);
+				cb.apply(Tools, args);
 			}, delay);
 		};
 	}
@@ -978,61 +1033,61 @@ class Tools {
 	public static getConstellation($1: number | Date, $2?: number) {
 		// - 如果第1个参数没有传，则直接返回空字符串
 		if (!$1) {
-			return '';
+			return "";
 		}
 		// - 定义日期
 		let month: number;
 		let day: number;
 		// - 如果第1个参数为Date类型，则直接赋值month、day变量；
-		if (Tools.toRawType($1) === 'date') {
+		if (Tools.toRawType($1) === "date") {
 			month = ($1 as Date).getMonth() + 1;
 			day = ($1 as Date).getDate();
-		} else if (typeof $1 !== 'number' || typeof $2 !== 'number') {
-			return '';
+		} else if (typeof $1 !== "number" || typeof $2 !== "number") {
+			return "";
 		} else if ($1 < 1 || $1 > 12 || $2 < 1 || $2 > 31) {
-			return '';
+			return "";
 		} else {
 			month = $1;
 			day = $2;
 		}
 		// - 返回匹配星座
-		let r = '';
+		let r = "";
 		switch (month) {
 			case 1:
-				r = day > 19 ? '水瓶座' : '摩羯座';
+				r = day > 19 ? "水瓶座" : "摩羯座";
 				break;
 			case 2:
-				r = day > 18 ? '双鱼座' : '水瓶座';
+				r = day > 18 ? "双鱼座" : "水瓶座";
 				break;
 			case 3:
-				r = day > 20 ? '白羊座' : '双鱼座';
+				r = day > 20 ? "白羊座" : "双鱼座";
 				break;
 			case 4:
-				r = day > 19 ? '金牛座' : '白羊座';
+				r = day > 19 ? "金牛座" : "白羊座";
 				break;
 			case 5:
-				r = day > 20 ? '双子座' : '金牛座';
+				r = day > 20 ? "双子座" : "金牛座";
 				break;
 			case 6:
-				r = day > 21 ? '巨蟹座' : '双子座';
+				r = day > 21 ? "巨蟹座" : "双子座";
 				break;
 			case 7:
-				r = day > 22 ? '狮子座' : '巨蟹座';
+				r = day > 22 ? "狮子座" : "巨蟹座";
 				break;
 			case 8:
-				r = day > 22 ? '处女座' : '狮子座';
+				r = day > 22 ? "处女座" : "狮子座";
 				break;
 			case 9:
-				r = day > 22 ? '天秤座' : '处女座';
+				r = day > 22 ? "天秤座" : "处女座";
 				break;
 			case 10:
-				r = day > 23 ? '天蝎座' : '天秤座';
+				r = day > 23 ? "天蝎座" : "天秤座";
 				break;
 			case 11:
-				r = day > 22 ? '射手座' : '天蝎座';
+				r = day > 22 ? "射手座" : "天蝎座";
 				break;
 			case 12:
-				r = day > 21 ? '摩羯座' : '射手座';
+				r = day > 21 ? "摩羯座" : "射手座";
 				break;
 		}
 		return r;
@@ -1056,34 +1111,32 @@ class Tools {
 		y: number,
 		lineHeight: number,
 		maxWidth?: number,
-		rows = 5
+		rows = 5,
 	) {
 		// 1. 异常处理
 		if (
 			!context ||
-			typeof text !== 'string' ||
-			typeof x !== 'number' ||
-			typeof y !== 'number' ||
-			typeof lineHeight !== 'number' ||
-			typeof maxWidth !== 'number'
+			typeof text !== "string" ||
+			typeof x !== "number" ||
+			typeof y !== "number" ||
+			typeof lineHeight !== "number" ||
+			typeof maxWidth !== "number"
 		) {
 			return 0;
 		}
 		// 2. 默认配置
-		context.textBaseline = 'top';
+		context.textBaseline = "top";
 		// 3. 获取canvas实例
 		const canvas = context.canvas;
 		// 4. 最大宽度(如果没有设置maxWidth，则自动获取canvas宽度作为maxWidth值)
 		const _maxWidth =
-			typeof maxWidth === 'undefined'
-				? (canvas && canvas.width) || 200
-				: maxWidth;
+			typeof maxWidth === "undefined" ? canvas?.width || 200 : maxWidth;
 		// 5. 定义一些变量
 		let lineWidth = 0; // 动态计算当前行在追加1个字符后所占的宽度（用于与maxWidth比较判断是否应该换行）
 		let curRow = 1; // 记录当前行
 		let lastSubStrIndex = 0; // 记录上一次开始截取的下标位置（用于下一行fill时截取字符串）
 		// 6. 遍历字符
-		const letters = text.split('');
+		const letters = text.split("");
 		for (let i = 0; i < letters.length; i++) {
 			// 累计计算拼接当前字符后当前行所占的宽度
 			lineWidth += context.measureText(letters[i]).width;
@@ -1095,7 +1148,7 @@ class Tools {
 				let fillStr = text.slice(lastSubStrIndex, i);
 				// 如果当前行大于了最大显示行数，则已省略后续文本渲染，超出部分以“...”呈现
 				if (curRow > rows && text.length > i) {
-					fillStr = text.substring(lastSubStrIndex, i - 2) + ' ...';
+					fillStr = `${text.substring(lastSubStrIndex, i - 2)} ...`;
 				}
 				// 渲染当前行的文本
 				context.fillText(fillStr, x, y);
@@ -1129,10 +1182,10 @@ class Tools {
 	public static ellipsis(
 		str: string,
 		len = 6,
-		type: 'head' | 'middle' | 'tail' = 'middle'
+		type: "head" | "middle" | "tail" = "middle",
 	) {
 		// 异常处理
-		if (typeof str !== 'string' || !str || (str && str.length <= len)) {
+		if (typeof str !== "string" || !str || (str && str.length <= len)) {
 			return str;
 		}
 		// 如果字符串长度在 len ~ len * 2 之间，重新计算len
@@ -1143,11 +1196,11 @@ class Tools {
 		const s2 = str.slice(-len);
 
 		switch (type) {
-			case 'head':
+			case "head":
 				return `··· ${s2}`;
-			case 'middle':
+			case "middle":
 				return `${s1} ··· ${s2}`;
-			case 'tail':
+			case "tail":
 				return `${s1} ···`;
 			default:
 				return str;
@@ -1162,13 +1215,13 @@ class Tools {
 	 * @returns
 	 */
 	public static analysisDateString(dateString: string) {
-		if (typeof dateString !== 'string') {
+		if (typeof dateString !== "string") {
 			return { start: undefined, end: undefined };
 		}
 		// -- 解构日期字符串
-		const [year, month] = dateString.split('-');
+		const [year, month] = dateString.split("-");
 		// -- 异常处理
-		if (isNaN(Number(year)) || isNaN(Number(month))) {
+		if (Number.isNaN(Number(year)) || Number.isNaN(Number(month))) {
 			return { start: undefined, end: undefined };
 		}
 		// -- 计算平年 & 闰年
@@ -1189,13 +1242,13 @@ class Tools {
 			30,
 			31,
 			30,
-			31
+			31,
 		];
 		const days = dayArr[+month - 1];
 		// -- 返回
 		return {
 			start: `${dateString}-01 00:00:00`,
-			end: `${dateString}-${days < 10 ? '0' + days : days} 23:59:59`
+			end: `${dateString}-${days < 10 ? `0${days}` : days} 23:59:59`,
 		};
 	}
 

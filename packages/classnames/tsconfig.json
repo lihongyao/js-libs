@@ -2,22 +2,21 @@
 	"compileOnSave": true,
 	"compilerOptions": {
 		"target": "ESNext",
-    "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
-    "strict": true,
-    "esModuleInterop": true,
-    "moduleResolution": "Node",
+		"module": "ESNext",
+		"lib": ["ESNext", "DOM"],
+		"strict": true,
+		"esModuleInterop": true,
+		"moduleResolution": "Node",
 
 		"declaration": true,
-    "declarationDir": "dist/types",
+		"declarationDir": "dist/types",
 		"emitDeclarationOnly": true,
-		"noEmit": false,   
-
+		"noEmit": false,
 
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noImplicitReturns": true,
-			
+
 		"isolatedModules": true,
 		"skipLibCheck": true,
 		"sourceMap": true,
@@ -26,8 +25,8 @@
 		"useDefineForClassFields": true,
 
 		"baseUrl": "./",
-    "paths": { "@/*": ["src/*"] },
+		"paths": { "@/*": ["src/*"] }
 	},
 	"include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/__tests__/**"]
+	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/__tests__/**"]
 }

@@ -1,63 +1,64 @@
-import path from 'path'
-import fs from 'fs'
-import typescript from '@rollup/plugin-typescript'
-import commonjs from '@rollup/plugin-commonjs'
-import resolve from '@rollup/plugin-node-resolve'
-import del from 'rollup-plugin-delete'
-import eslint from '@rollup/plugin-eslint'
-import terser from '@rollup/plugin-terser'
-import postcss from 'rollup-plugin-postcss'
-import { babel } from '@rollup/plugin-babel'
+// scripts/utils.js
+import fs from "node:fs";
+import path from "node:path";
+import { babel } from "@rollup/plugin-babel";
+import commonjs from "@rollup/plugin-commonjs";
+import eslint from "@rollup/plugin-eslint";
+import resolve from "@rollup/plugin-node-resolve";
+import terser from "@rollup/plugin-terser";
+import typescript from "@rollup/plugin-typescript";
+import del from "rollup-plugin-delete";
+import postcss from "rollup-plugin-postcss";
 
-const isProduction = process.env.NODE_ENV === 'production'
-const isDevelopment = !isProduction
-const pkgPath = path.resolve(__dirname, '../packages')
+const isProduction = process.env.NODE_ENV === "production";
+const isDevelopment = !isProduction;
+const pkgPath = path.resolve(__dirname, "../packages");
 
-const commonPlugins = pkgName => [
-  del.default({ targets: `${pkgPath}/${pkgName}/dist/**/*` }),
-  eslint({
-    include: ['src/**'],
-    exclude: ['node_modules/**'],
-    throwOnError: true, 
-    throwOnWarning: true, 
-  }),
-  resolve(),
-  commonjs(),
-  typescript({
-    tsconfig: `${pkgPath}/${pkgName}/tsconfig.json`,
-    sourceMap: isDevelopment,
-  }),
-  babel({
-    extensions: ['.js', '.ts'],
-    exclude: 'node_modules/**',
-    babelHelpers: 'bundled',
-  }),
-  postcss({
-    plugins: [],
-  }),
-]
-const devPlugins = []
+const commonPlugins = (pkgName) => [
+	del.default({ targets: `${pkgPath}/${pkgName}/dist/**/*` }),
+	eslint({
+		include: ["src/**"],
+		exclude: ["node_modules/**"],
+		throwOnError: true,
+		throwOnWarning: true,
+	}),
+	resolve(),
+	commonjs(),
+	typescript({
+		tsconfig: `${pkgPath}/${pkgName}/tsconfig.json`,
+		sourceMap: isDevelopment,
+	}),
+	babel({
+		extensions: [".js", ".ts"],
+		exclude: "node_modules/**",
+		babelHelpers: "bundled",
+	}),
+	postcss({
+		plugins: [],
+	}),
+];
+const devPlugins = [];
 const proPlugins = [
-  terser({
-    compress: {
-      drop_console: false,
-      drop_debugger: true,
-    },
-    format: {
-      comments: (_, comment) => {
-        return /eslint-disable/.test(comment.value) // 不删除eslint的注释
-      },
-    },
-  }),
-]
+	terser({
+		compress: {
+			drop_console: false,
+			drop_debugger: true,
+		},
+		format: {
+			comments: (_, comment) => {
+				return /eslint-disable/.test(comment.value); // 不删除eslint的注释
+			},
+		},
+	}),
+];
 
 /**
  * 获取需要打包的文件路径
  * @param {*} libs
  */
 export function getPkgNames() {
-  const filenames = fs.readdirSync(pkgPath, { encoding: 'utf-8' })
-  return filenames.filter(filename => /^[\w-]+$/.test(filename))
+	const filenames = fs.readdirSync(pkgPath, { encoding: "utf-8" });
+	return filenames.filter((filename) => /^[\w-]+$/.test(filename));
 }
 
 /**
@@ -67,10 +68,10 @@ export function getPkgNames() {
  * @returns
  */
 function resolvePath(pkgName, isDist) {
-  if (isDist) {
-    return `${pkgPath}/${pkgName}/dist`
-  }
-  return `${pkgPath}/${pkgName}`
+	if (isDist) {
+		return `${pkgPath}/${pkgName}/dist`;
+	}
+	return `${pkgPath}/${pkgName}`;
 }
 
 /**
@@ -79,9 +80,9 @@ function resolvePath(pkgName, isDist) {
  * @returns
  */
 function getPackageJSON(pkgName) {
-  const path = `${resolvePath(pkgName)}/package.json`
-  const str = fs.readFileSync(path, { encoding: 'utf8' })
-  return JSON.parse(str)
+	const path = `${resolvePath(pkgName)}/package.json`;
+	const str = fs.readFileSync(path, { encoding: "utf8" });
+	return JSON.parse(str);
 }
 
 /**
@@ -92,17 +93,17 @@ function getPackageJSON(pkgName) {
  * @returns
  */
 function generateOutputs(formats, distPath, moduleName) {
-  const outputs = []
-  formats.forEach(format => {
-    outputs.push({
-      file: `${distPath}/index.${format}.js`,
-      format,
-      name: ['iife', 'umd'].includes(format) ? moduleName : undefined,
-      sourcemap: false,
-      banner: '/* eslint-disable */\n',
-    })
-  })
-  return outputs
+	const outputs = [];
+	formats.forEach((format) => {
+		outputs.push({
+			file: `${distPath}/index.${format}.js`,
+			format,
+			name: ["iife", "umd"].includes(format) ? moduleName : undefined,
+			sourcemap: false,
+			banner: "/* eslint-disable */\n",
+		});
+	});
+	return outputs;
 }
 
 /**
@@ -111,12 +112,19 @@ function generateOutputs(formats, distPath, moduleName) {
  * @returns
  */
 export function generateRollupConfig(pkgName) {
-  const pkgPath = resolvePath(pkgName)
-  const distPath = resolvePath(pkgName, true)
-  const { buildOptions } = getPackageJSON(pkgName)
-  return {
-    input: `${pkgPath}/src/index.ts`,
-    output: generateOutputs(buildOptions.formats, distPath, buildOptions.moduleName),
-    plugins: [...commonPlugins(pkgName), ...(isProduction ? proPlugins : devPlugins)],
-  }
+	const pkgPath = resolvePath(pkgName);
+	const distPath = resolvePath(pkgName, true);
+	const { buildOptions } = getPackageJSON(pkgName);
+	return {
+		input: `${pkgPath}/src/index.ts`,
+		output: generateOutputs(
+			buildOptions.formats,
+			distPath,
+			buildOptions.moduleName,
+		),
+		plugins: [
+			...commonPlugins(pkgName),
+			...(isProduction ? proPlugins : devPlugins),
+		],
+	};
 }

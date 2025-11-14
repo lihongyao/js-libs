@@ -79,29 +79,29 @@ export default class Brush {
 	 */
 	constructor(options?: BrushOptions) {
 		this.brushOptions = {
-			id: 'LG_BRUSH_PERSISTENCE',
-			color: '#333',
+			id: "LG_BRUSH_PERSISTENCE",
+			color: "#333",
 			thickness: 2,
 			storage: false,
 			maxHistoriesLength: 50,
-			onDrawBegin: () => { },
-			onDrawEnd: () => { },
-			...(options || {})
+			onDrawBegin: () => {},
+			onDrawEnd: () => {},
+			...(options || {}),
 		};
 	}
 
 	/**
 	 * 获取默认文件名，保存图片时调用
-	 * @returns 
+	 * @returns
 	 */
 	private _getDefaultFilename() {
 		const date = new Date();
 		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
-		const hour = String(date.getHours()).padStart(2, '0');
-		const minute = String(date.getMinutes()).padStart(2, '0');
-		const seconds = String(date.getSeconds()).padStart(2, '0');
+		const month = String(date.getMonth() + 1).padStart(2, "0");
+		const day = String(date.getDate()).padStart(2, "0");
+		const hour = String(date.getHours()).padStart(2, "0");
+		const minute = String(date.getMinutes()).padStart(2, "0");
+		const seconds = String(date.getSeconds()).padStart(2, "0");
 		return `BRUSH_${year}${month}${day}${hour}${minute}${seconds}.jpg`;
 	}
 
@@ -140,9 +140,9 @@ export default class Brush {
 		this._drawCircle(point.x, point.y, Math.ceil(this.ctx.lineWidth / 2));
 		// -- 橡皮擦模式下，橡皮擦元素并更新橡皮擦游标位置
 		if (this.isEraser && this.eraserCursor) {
-			this.eraserCursor.style.display = 'block';
-			this.eraserCursor.style.left = point.x + 'px';
-			this.eraserCursor.style.top = point.y + 'px';
+			this.eraserCursor.style.display = "block";
+			this.eraserCursor.style.left = `${point.x}px`;
+			this.eraserCursor.style.top = `${point.y}px`;
 		}
 	}
 	/**
@@ -161,8 +161,8 @@ export default class Brush {
 		this.prevPoint = newPoint;
 		// -- 橡皮擦模式下，更新橡皮擦游标位置
 		if (this.isEraser && this.eraserCursor) {
-			this.eraserCursor.style.left = newPoint.x + 'px';
-			this.eraserCursor.style.top = newPoint.y + 'px';
+			this.eraserCursor.style.left = `${newPoint.x}px`;
+			this.eraserCursor.style.top = `${newPoint.y}px`;
 		}
 	}
 	/**
@@ -180,7 +180,7 @@ export default class Brush {
 		this._saveToHistories();
 		// -- 橡皮擦模式下，隐藏橡皮擦游标元素
 		if (this.isEraser && this.eraserCursor) {
-			this.eraserCursor.style.display = 'none';
+			this.eraserCursor.style.display = "none";
 		}
 	}
 
@@ -243,7 +243,7 @@ export default class Brush {
 		if (!this.canvas) return { x: 0, y: 0 };
 		let clientX = 0;
 		let clientY = 0;
-		if ('touches' in event && event.touches.length > 0) {
+		if ("touches" in event && event.touches.length > 0) {
 			clientX = event.touches[0].pageX;
 			clientY = event.touches[0].pageY;
 		} else {
@@ -273,10 +273,10 @@ export default class Brush {
 		// -- 追加新纪录
 		this.histories.push({
 			data: this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height),
-			timestamp: Date.now()
+			timestamp: Date.now(),
 		});
 		this.historiesIndex++;
-		console.log('histories >> ', this.histories, this.historiesIndex);
+		console.log("histories >> ", this.histories, this.historiesIndex);
 	}
 
 	/**
@@ -292,40 +292,40 @@ export default class Brush {
 		const { target = document.body } = options || {};
 
 		// -- 由于 canvas 使用绝对定位，因此需判断挂载目标元素是否指定定位模式
-		if (this._getStyle(target, 'position') === 'static') {
-			target.style.position = 'relative';
+		if (this._getStyle(target, "position") === "static") {
+			target.style.position = "relative";
 		}
 
 		// -- 创建 canvas
-		const canvas = document.createElement('canvas');
-		canvas.classList.add('brush-canvas');
+		const canvas = document.createElement("canvas");
+		canvas.classList.add("brush-canvas");
 		canvas.width = target.scrollWidth;
 		canvas.height = target.scrollHeight;
-		canvas.style.position = 'absolute';
-		canvas.style.left = '0';
-		canvas.style.top = '0';
-		canvas.style.cursor = 'pointer';
-		canvas.style.zIndex = '99999';
+		canvas.style.position = "absolute";
+		canvas.style.left = "0";
+		canvas.style.top = "0";
+		canvas.style.cursor = "pointer";
+		canvas.style.zIndex = "99999";
 
 		// -- 配置画笔
-		const ctx = canvas.getContext('2d');
+		const ctx = canvas.getContext("2d");
 		if (!ctx) return;
 		ctx.lineWidth = this.brushOptions.thickness;
 		ctx.strokeStyle = this.brushOptions.color;
-		ctx.lineCap = 'round';
-		ctx.lineJoin = 'round';
+		ctx.lineCap = "round";
+		ctx.lineJoin = "round";
 		(ctx as any).willReadFrequently = true;
 
 		// -- 创建橡皮擦元素
-		const eraserCursor = document.createElement('div');
-		eraserCursor.classList.add('brush-eraser-cursor');
-		eraserCursor.style.display = 'none';
-		eraserCursor.style.border = '2px solid #000';
-		eraserCursor.style.borderRadius = '50%';
-		eraserCursor.style.pointerEvents = 'none';
-		eraserCursor.style.position = 'absolute';
-		eraserCursor.style.transform = 'translate(-50%, -50%)';
-		eraserCursor.style.zIndex = '99999';
+		const eraserCursor = document.createElement("div");
+		eraserCursor.classList.add("brush-eraser-cursor");
+		eraserCursor.style.display = "none";
+		eraserCursor.style.border = "2px solid #000";
+		eraserCursor.style.borderRadius = "50%";
+		eraserCursor.style.pointerEvents = "none";
+		eraserCursor.style.position = "absolute";
+		eraserCursor.style.transform = "translate(-50%, -50%)";
+		eraserCursor.style.zIndex = "99999";
 
 		// -- 挂载画板和橡皮擦元素
 		target.appendChild(canvas);
@@ -346,20 +346,20 @@ export default class Brush {
 
 		// -- 事件监听
 		// -- Mobile
-		canvas.addEventListener('touchstart', this._drawBegin.bind(this), {
-			passive: false
+		canvas.addEventListener("touchstart", this._drawBegin.bind(this), {
+			passive: false,
 		});
-		canvas.addEventListener('touchmove', this._drawing.bind(this), {
-			passive: false
+		canvas.addEventListener("touchmove", this._drawing.bind(this), {
+			passive: false,
 		});
-		canvas.addEventListener('touchend', this._drawEnd.bind(this), {
-			passive: false
+		canvas.addEventListener("touchend", this._drawEnd.bind(this), {
+			passive: false,
 		});
 		// -- PC
-		canvas.addEventListener('mousedown', this._drawBegin.bind(this));
-		canvas.addEventListener('mousemove', this._drawing.bind(this));
-		canvas.addEventListener('mouseup', this._drawEnd.bind(this));
-		canvas.addEventListener('mouseleave', this._drawEnd.bind(this));
+		canvas.addEventListener("mousedown", this._drawBegin.bind(this));
+		canvas.addEventListener("mousemove", this._drawing.bind(this));
+		canvas.addEventListener("mouseup", this._drawEnd.bind(this));
+		canvas.addEventListener("mouseleave", this._drawEnd.bind(this));
 	}
 
 	/**
@@ -370,14 +370,14 @@ export default class Brush {
 		if (!this.canvas || !this.eraserCursor) return;
 		// -- 移除事件监听
 		// -- Mobile
-		this.canvas.removeEventListener('touchstart', this._drawBegin.bind(this));
-		this.canvas.removeEventListener('touchmove', this._drawing.bind(this));
-		this.canvas.removeEventListener('touchend', this._drawEnd.bind(this));
+		this.canvas.removeEventListener("touchstart", this._drawBegin.bind(this));
+		this.canvas.removeEventListener("touchmove", this._drawing.bind(this));
+		this.canvas.removeEventListener("touchend", this._drawEnd.bind(this));
 		// -- PC
-		this.canvas.removeEventListener('mousedown', this._drawBegin.bind(this));
-		this.canvas.removeEventListener('mousemove', this._drawing.bind(this));
-		this.canvas.removeEventListener('mouseup', this._drawEnd.bind(this));
-		this.canvas.removeEventListener('mouseleave', this._drawEnd.bind(this));
+		this.canvas.removeEventListener("mousedown", this._drawBegin.bind(this));
+		this.canvas.removeEventListener("mousemove", this._drawing.bind(this));
+		this.canvas.removeEventListener("mouseup", this._drawEnd.bind(this));
+		this.canvas.removeEventListener("mouseleave", this._drawEnd.bind(this));
 
 		// -- 移除DOM
 		this.canvas.remove();
@@ -418,8 +418,8 @@ export default class Brush {
 		this.ctx.lineWidth = thickness;
 		// -- 橡皮擦模式
 		if (this.isEraser && this.eraserCursor) {
-			this.eraserCursor.style.width = this.eraserCursor.style.height =
-				thickness + 'px';
+			this.eraserCursor.style.width =
+				this.eraserCursor.style.height = `${thickness}px`;
 		}
 	}
 
@@ -485,16 +485,16 @@ export default class Brush {
 		const defaultFilename = this._getDefaultFilename();
 		const {
 			filename = defaultFilename,
-			type = 'image/jpg',
-			quality = 75
+			type = "image/jpg",
+			quality = 75,
 		} = options || {};
 		// -- 获取画板链接
 		const url = this.canvas.toDataURL(type, quality);
 		// -- 模拟点击下载
-		const a = document.createElement('a');
-		a.setAttribute('href', url);
-		a.setAttribute('download', filename);
-		a.setAttribute('target', '_blank');
+		const a = document.createElement("a");
+		a.setAttribute("href", url);
+		a.setAttribute("download", filename);
+		a.setAttribute("target", "_blank");
 		a.click();
 	}
 
@@ -509,13 +509,13 @@ export default class Brush {
 		// -- 判断橡皮擦状态值
 		if (this.isEraser) {
 			// 设置为“目标擦除”模式
-			this.ctx.globalCompositeOperation = 'destination-out';
+			this.ctx.globalCompositeOperation = "destination-out";
 			// 设置橡皮擦游标尺寸（同画笔粗细）
-			this.eraserCursor.style.width = this.eraserCursor.style.height =
-				this.ctx.lineWidth + 'px';
+			this.eraserCursor.style.width =
+				this.eraserCursor.style.height = `${this.ctx.lineWidth}px`;
 		} else {
 			// 设置为“正常绘制”模式
-			this.ctx.globalCompositeOperation = 'source-over';
+			this.ctx.globalCompositeOperation = "source-over";
 		}
 	}
 }

@@ -16,18 +16,18 @@ class JSBridge {
 	 */
 	private static getEnv() {
 		const ua = window.navigator.userAgent;
-		if (/MicroMessenger/i.test(ua)) return 'weixin';
-		else if (/Linux|Android|Adr/i.test(ua)) return 'android';
-		else if (/iPhone/i.test(ua)) return 'ios';
-		else if (/HarmonyOS/i.test(ua)) return 'harmony';
-		else return 'unknown';
+		if (/MicroMessenger/i.test(ua)) return "weixin";
+		else if (/Linux|Android|Adr/i.test(ua)) return "android";
+		else if (/iPhone/i.test(ua)) return "ios";
+		else if (/HarmonyOS/i.test(ua)) return "harmony";
+		else return "unknown";
 	}
 
 	public static jsTest(options: any) {
-		console.log('__jsTest__');
+		console.log("__jsTest__");
 		JSBridge.call({
-			fn: 'jsTest',
-			data: options
+			fn: "jsTest",
+			data: options,
 		});
 	}
 
@@ -50,12 +50,12 @@ class JSBridge {
 			payload = null;
 		}
 		// 3. 如果参数为对象，则转成JSON字符串
-		if (typeof options.data === 'object') {
+		if (typeof options.data === "object") {
 			payload = JSON.stringify(options.data);
 		}
 		// 4. 根据环境执行
 		const env = JSBridge.getEnv();
-		if (env === 'ios') {
+		if (env === "ios") {
 			try {
 				if (options.iOSPrompt) {
 					return prompt(JSON.stringify(options.iOSPrompt));
@@ -65,14 +65,14 @@ class JSBridge {
 			} catch (err) {
 				console.log(err);
 			}
-		} else if (env === 'android') {
+		} else if (env === "android") {
 			try {
 				return window.js_android[options.fn](payload);
 			} catch (err) {
 				console.log(err);
 			}
 		} else {
-			console.log('JSBridge仅支持在iOS或安卓环境下使用');
+			console.log("JSBridge仅支持在iOS或安卓环境下使用");
 		}
 	}
 
@@ -93,8 +93,8 @@ class JSBridge {
 		miniprogramType?: 0 | 1 | 2;
 	}) {
 		JSBridge.call({
-			fn: 'launchMiniProgram',
-			data: options
+			fn: "launchMiniProgram",
+			data: options,
 		});
 	}
 
@@ -113,8 +113,8 @@ class JSBridge {
 		orderNo?: string;
 	}) {
 		JSBridge.call({
-			fn: 'payment',
-			data: params
+			fn: "payment",
+			data: params,
 		});
 	}
 
@@ -139,8 +139,8 @@ class JSBridge {
 		imageBase64?: string;
 	}) {
 		JSBridge.call({
-			fn: 'shareWith',
-			data: options
+			fn: "shareWith",
+			data: options,
 		});
 	}
 
@@ -150,8 +150,8 @@ class JSBridge {
 	 */
 	public static saveImages(images: string[]) {
 		JSBridge.call({
-			fn: 'saveImages',
-			data: images
+			fn: "saveImages",
+			data: images,
 		});
 	}
 
@@ -162,8 +162,8 @@ class JSBridge {
 	 */
 	public static saveVideos(videoUrls: string[]) {
 		JSBridge.call({
-			fn: 'saveVideos',
-			data: videoUrls
+			fn: "saveVideos",
+			data: videoUrls,
 		});
 	}
 
@@ -173,7 +173,7 @@ class JSBridge {
 	 */
 	public static nativeBack() {
 		JSBridge.call({
-			fn: 'nativeBack'
+			fn: "nativeBack",
 		});
 	}
 
@@ -185,12 +185,12 @@ class JSBridge {
 	 * @param {String} options.callback 微信绑定之后的回调函数
 	 */
 	public static bindPlatform(options: {
-		platform: 'WX' | 'ALIPAY';
+		platform: "WX" | "ALIPAY";
 		callback: string;
 	}) {
 		JSBridge.call({
-			fn: 'bindPlatform',
-			data: options
+			fn: "bindPlatform",
+			data: options,
 		});
 	}
 
@@ -201,10 +201,10 @@ class JSBridge {
 	 * @example
 	 * JSBridge.openApp('WX'); // 打开微信
 	 */
-	public static openApp(appTag: 'WX' | 'QQ') {
+	public static openApp(appTag: "WX" | "QQ") {
 		JSBridge.call({
-			fn: 'openApp',
-			data: appTag
+			fn: "openApp",
+			data: appTag,
 		});
 	}
 
@@ -214,8 +214,8 @@ class JSBridge {
 	 */
 	public static getLocation(callback: string) {
 		JSBridge.call({
-			fn: 'getLocation',
-			data: { callback }
+			fn: "getLocation",
+			data: { callback },
 		});
 	}
 
@@ -226,10 +226,10 @@ class JSBridge {
 	 */
 	public static getToken() {
 		const token = JSBridge.call({
-			fn: 'getToken',
-			iOSPrompt: { type: 'GET_TOKEN' }
+			fn: "getToken",
+			iOSPrompt: { type: "GET_TOKEN" },
 		});
-		return token ? (token as string) : '';
+		return token ? (token as string) : "";
 	}
 
 	/**
@@ -240,8 +240,8 @@ class JSBridge {
 	 */
 	public static sharePoster(options: { type: string; callback: string }) {
 		JSBridge.call({
-			fn: 'sharePoster',
-			data: options
+			fn: "sharePoster",
+			data: options,
 		});
 	}
 
@@ -251,8 +251,8 @@ class JSBridge {
 	 */
 	public static setClipboard(value: string) {
 		JSBridge.call({
-			fn: 'setClipboard',
-			data: value
+			fn: "setClipboard",
+			data: value,
 		});
 	}
 
@@ -262,10 +262,10 @@ class JSBridge {
 	 */
 	public static getClipboard() {
 		const value = JSBridge.call({
-			fn: 'getClipboard',
-			iOSPrompt: { type: 'clipboard' }
+			fn: "getClipboard",
+			iOSPrompt: { type: "clipboard" },
 		});
-		return value ? (value as string) : '';
+		return value ? (value as string) : "";
 	}
 
 	/**
@@ -274,8 +274,8 @@ class JSBridge {
 	 */
 	public static baiduStatistics(eventId: string) {
 		JSBridge.call({
-			fn: 'baiduStatistics',
-			data: eventId
+			fn: "baiduStatistics",
+			data: eventId,
 		});
 	}
 
@@ -285,8 +285,8 @@ class JSBridge {
 	 */
 	public static nativeRefresh(k: string) {
 		JSBridge.call({
-			fn: 'nativeRefresh',
-			data: k
+			fn: "nativeRefresh",
+			data: k,
 		});
 	}
 }

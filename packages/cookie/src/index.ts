@@ -1,74 +1,84 @@
-/*
- * @Author: Lee
- * @Date: 2023-08-17 09:31:14
- * @LastEditors: Lee
- * @LastEditTime: 2023-08-17 19:56:13
- * @Description:
- */
-class Cookie {
-	/**
-	 * 添加/修改cookie
-	 * @param {string} key 键
-	 * @param {string} value 值
-	 * @param {number} expireDays 过期时间
-	 */
-	public static set(key: string, value: string | number, expireDays = 1) {
-		if (['string', 'number'].indexOf(typeof value) === -1) {
-			return;
-		}
-		document.cookie = `${key}=${encodeURIComponent(value)};expires=${new Date(
-			new Date().getTime() + expireDays * 24 * 60 * 60 * 1000
-		).toString()};path=/;`;
-	}
-	/**
-	 * 读取cookie，如果key存在，则查询指定key所对应的cookie值，否则返回所有cookie值
-	 * @param {string} key 键
-	 */
-	public static get<T>(key?: string) {
-		if (document.cookie) {
-			const pairs = document.cookie.split(';');
-			const result: Record<string, string> = {};
-			pairs.forEach((str) => {
-				const arr = str.trim().split('=');
-				const ikey = String(decodeURIComponent(arr[0]));
-				const ivalue = String(decodeURIComponent(arr[1]));
-				result[ikey] = ivalue;
-			});
-			const res: unknown = key ? (result[key] ? result[key] : '') : result;
-			return res as T;
-		} else {
-			const res: unknown = key ? '' : {};
-			return res as T;
-		}
-	}
-	/**
-	 * 删除cookie，如果key属性存在，则删除指定key对应的cookie值，否则清空cookie
-	 * @param {string} key 键
-	 */
-	public static del(key?: string | string[]) {
-		const expires = new Date(0);
-		const type = Object.prototype.toString.call(key).slice(8, -1).toLowerCase();
-		if (key) {
-			if (type === 'string') {
-				// 删除指定cookie
-				document.cookie = `${key}=0;expires=${expires.toUTCString()};path=/`;
-			} else if (type === 'array') {
-				// 批量删除
-				const keys = key as string[];
-				keys.forEach((_key) => {
-					document.cookie = `${_key}=0;expires=${expires.toUTCString()};path=/`;
-				});
-			}
-		} else {
-			// 清空所有cookie
-			const keys = document.cookie.match(/[^ =;]+(?==)/g);
-			if (keys) {
-				keys.forEach((_key) => {
-					document.cookie = `${_key}=0;expires=${expires.toUTCString()};path=/`;
-				});
-			}
-		}
-	}
+// src/utils/cookie.ts
+export interface CookieOptions {
+	path?: string;
+	secure?: boolean;
+	sameSite?: "Strict" | "Lax" | "None";
 }
 
-export default Cookie;
+/**
+ * 添加/修改 cookie
+ * @param key 键
+ * @param value 值
+ * @param expireDays 过期时间（天）
+ * @param options 额外选项
+ */
+export function setCookie(
+	key: string,
+	value: string | number,
+	expireDays = 1,
+	options?: CookieOptions,
+) {
+	if (typeof value !== "string" && typeof value !== "number") return;
+
+	const expires = new Date(Date.now() + expireDays * 24 * 60 * 60 * 1000);
+	const parts = [
+		`${key}=${encodeURIComponent(value)}`,
+		`expires=${expires.toUTCString()}`,
+		`path=${options?.path ?? "/"}`,
+	];
+
+	if (options?.secure) parts.push("Secure");
+	if (options?.sameSite) parts.push(`SameSite=${options.sameSite}`);
+
+	// 使用赋值，但通过封装函数统一管理
+	document.cookie = parts.join("; ");
+}
+
+/**
+ * 读取 cookie，如果 key 存在则返回对应值，否则返回所有 cookie
+ */
+export function getCookie<T>(key?: string): T {
+	if (!document.cookie) return (key ? "" : {}) as T;
+
+	const pairs = document.cookie.split(";");
+	const result: Record<string, string> = {};
+
+	pairs.forEach((str) => {
+		const [k, v] = str.trim().split("=");
+		if (k && v !== undefined) {
+			result[decodeURIComponent(k)] = decodeURIComponent(v);
+		}
+	});
+
+	const res: unknown = key ? (result[key] ?? "") : result;
+	return res as T;
+}
+
+/**
+ * 删除 cookie，如果 key 存在则删除指定 cookie，否则清空所有 cookie
+ */
+export function delCookie(key?: string | string[], options?: CookieOptions) {
+	const expires = new Date(0);
+
+	const buildCookie = (k: string) =>
+		`${k}=0;expires=${expires.toUTCString()};path=${options?.path ?? "/"}${
+			options?.secure ? ";Secure" : ""
+		}${options?.sameSite ? `;SameSite=${options.sameSite}` : ""}`;
+
+	if (!key) {
+		// 删除所有 cookie
+		const keys = document.cookie.match(/[^ =;]+(?==)/g) ?? [];
+		keys.forEach((k) => {
+			document.cookie = buildCookie(k);
+		});
+		return;
+	}
+
+	if (typeof key === "string") {
+		document.cookie = buildCookie(key);
+	} else if (Array.isArray(key)) {
+		key.forEach((k) => {
+			document.cookie = buildCookie(k);
+		});
+	}
+}

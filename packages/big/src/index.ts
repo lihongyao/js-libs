@@ -1,10 +1,10 @@
-type OperationType = '+' | '-' | '*' | '/';
+type OperationType = "+" | "-" | "*" | "/";
 
 class Big {
 	private v: number;
 	constructor(v: number | string) {
 		const t = parseFloat(v.toString());
-		this.v = isNaN(t) ? 0 : t;
+		this.v = Number.isNaN(t) ? 0 : t;
 	}
 	/**
 	 * 工具函数：转换整数，返回倍数及整数值，比如
@@ -18,7 +18,7 @@ class Big {
 			ret.num = n;
 			return ret;
 		}
-		ret.times = Math.pow(10, n.toString().split('.')[1].length);
+		ret.times = 10 ** n.toString().split(".")[1].length;
 		ret.num = parseInt((n * ret.times).toString(), 10);
 		return ret;
 	}
@@ -41,7 +41,7 @@ class Big {
 		const max = Math.max(t1, t2);
 		let result = 0;
 		switch (key) {
-			case '+':
+			case "+":
 				if (t1 < t2) {
 					result = n1 * (t2 / t1) + n2;
 				} else if (t1 > t2) {
@@ -51,7 +51,7 @@ class Big {
 				}
 				result /= max;
 				break;
-			case '-':
+			case "-":
 				if (t1 < t2) {
 					result = n1 * (t2 / t1) - n2;
 				} else if (t1 > t2) {
@@ -61,10 +61,10 @@ class Big {
 				}
 				result /= max;
 				break;
-			case '*':
+			case "*":
 				result = (n1 * n2) / (t1 * t2);
 				break;
-			case '/':
+			case "/":
 				result = (n1 * t2) / (t1 * n2);
 				break;
 			default:
@@ -81,7 +81,7 @@ class Big {
 			return n.v;
 		} else {
 			const t = parseFloat(n.toString());
-			return isNaN(t) ? 0 : t;
+			return Number.isNaN(t) ? 0 : t;
 		}
 	}
 
@@ -90,28 +90,28 @@ class Big {
 	 * @param {number|string|Big} n 运算值
 	 */
 	public plus(n: number | string | Big) {
-		return this.operation(this.v, this.numeric(n), '+');
+		return this.operation(this.v, this.numeric(n), "+");
 	}
 	/**
 	 * 减法运算
 	 * @param {number|string|Big} n 运算值
 	 */
 	public minus(n: number | string | Big) {
-		return this.operation(this.v, this.numeric(n), '-');
+		return this.operation(this.v, this.numeric(n), "-");
 	}
 	/**
 	 * 乘法运算
 	 * @param {number|string|Big} n 运算值
 	 */
 	public multipliedBy(n: number | string | Big) {
-		return this.operation(this.v, this.numeric(n), '*');
+		return this.operation(this.v, this.numeric(n), "*");
 	}
 	/**
 	 * 除法运算
 	 * @param {number|string|Big} n 运算值
 	 */
 	public dividedBy(n: number | string | Big) {
-		return this.operation(this.v, this.numeric(n), '/');
+		return this.operation(this.v, this.numeric(n), "/");
 	}
 
 	/**
@@ -129,16 +129,16 @@ class Big {
 	 */
 	public static digits(v: number, len: number = 2) {
 		if (Number.isInteger(v)) {
-			return `${v}.${Array(len).fill(0).join('')}`;
+			return `${v}.${Array(len).fill(0).join("")}`;
 		} else {
-			const [prefix, suffix] = v.toString().split('.');
+			const [prefix, suffix] = v.toString().split(".");
 			const sLen = suffix.length;
 			if (sLen > len) {
 				return `${prefix}.${suffix.slice(0, len)}`;
 			} else if (sLen < len) {
 				return `${prefix}.${suffix}${Array(len - sLen)
 					.fill(0)
-					.join('')}`;
+					.join("")}`;
 			} else {
 				return `${prefix}.${suffix}`;
 			}
@@ -156,14 +156,14 @@ class Big {
 	 * @param {number|string} v
 	 */
 	public static rmb(v: number | string) {
-		if (isNaN(Number(v))) {
-			return '0';
+		if (Number.isNaN(Number(v))) {
+			return "0";
 		} else {
 			const foo = v.toString();
 			if (/^[0-9]+$/.test(foo)) {
 				return foo;
 			} else {
-				const [prefix, suffix] = foo.split('.');
+				const [prefix, suffix] = foo.split(".");
 				const sLen = suffix.length;
 				if (sLen > 2) {
 					return `${prefix}.${suffix.slice(0, 2)}`;
@@ -183,15 +183,15 @@ class Big {
 	 * @param {number|string} v
 	 */
 	public static split(v: number | string) {
-		if (isNaN(Number(v))) {
+		if (Number.isNaN(Number(v))) {
 			return [];
 		} else {
 			return v
 				.toString()
-				.split('.')
+				.split(".")
 				.map((item, i) => {
 					if (i === 1) {
-						return item.padEnd(2, '0');
+						return item.padEnd(2, "0");
 					}
 					return item;
 				});
@@ -208,7 +208,7 @@ class Big {
 	 */
 	public static ellipsis(v: number | string) {
 		// 如果不是数值类型并且转换之后不为数字，则直接返回传入值
-		if (isNaN(Number(v))) {
+		if (Number.isNaN(Number(v))) {
 			return v.toString();
 		}
 		// 如果传入数值小于1万则没必要转换，直接返回
@@ -216,7 +216,7 @@ class Big {
 			return v.toString();
 		}
 		// 超过1万，处理之后再返回
-		return Big.rmb(+v / 10000) + '万';
+		return `${Big.rmb(+v / 10000)}万`;
 	}
 	public ellipsis() {
 		return Big.ellipsis(this.v);

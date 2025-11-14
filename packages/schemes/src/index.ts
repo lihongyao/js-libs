@@ -8,21 +8,24 @@ interface PushOptions {
 }
 
 class HSchemes {
-	private __SCHEME: string = '';
-	private __BASE: string = '';
+	private __SCHEME: string = "";
+	private __BASE: string = "";
+
 	// 构造单例
-	private static instance: HSchemes;
+	private static instance: HSchemes | null = null;
+
+	// 私有构造函数，防止外部实例化
 	private constructor() {}
 
 	/**
 	 * 获取Scheme单例实例对象
 	 * @returns 返回实例对象
 	 */
-	public static defaultSchemes() {
-		if (!this.instance) {
-			this.instance = new HSchemes();
+	public static defaultSchemes(): HSchemes {
+		if (HSchemes.instance === null) {
+			HSchemes.instance = new HSchemes();
 		}
-		return this.instance;
+		return HSchemes.instance;
 	}
 
 	/**
@@ -31,7 +34,7 @@ class HSchemes {
 	 * @param scheme scheme地址，只需要配置前缀，如：ddou://www.d-dou.com
 	 * @param base 二级目录地址
 	 */
-	public config(scheme: string, base: string = '') {
+	public config(scheme: string, base: string = ""): void {
 		if (base && !/^\//.test(base)) {
 			base = `/${base}`;
 		}
@@ -43,37 +46,34 @@ class HSchemes {
 	 * 跳转H5页面
 	 *
 	 * @param path H5路由
-	 * @param options  可选项
+	 * @param options 可选项
 	 */
-	public push(path: string, options: PushOptions = {}) {
+	public push(path: string, options: PushOptions = {}): void {
 		const SCHEME_PUSH = `${this.__SCHEME}/push`;
 		// 解构参数
 		const { query, needHeader = 0, appBack = 1 } = options;
-		// 处理url
+
 		let url: string;
-		// 如果连接以http开头，则直接赋值
 		if (/^http/.test(path)) {
 			url = path;
 		} else {
 			url = `${window.location.origin}${this.__BASE}${path}?needHeader=${needHeader}&appBack=${appBack}`;
-			// 判断是否存在query参数，如果存在，则做拼接处理
 			if (query) {
 				Object.keys(query).forEach((key) => {
 					url += `&${key}=${query[key]}`;
 				});
 			}
 		}
-		// 处理scheme地址
+
 		const schemeHref = `${SCHEME_PUSH}?url=${encodeURIComponent(url)}`;
-		// 执行跳转
 		window.location.href = schemeHref;
 	}
 
 	/**
 	 * 切换原生tab页
-	 * @param index
+	 * @param index tab索引
 	 */
-	public switchTab(index: number) {
+	public switchTab(index: number): void {
 		const SCHEME_SWITCH = `${this.__SCHEME}/switch`;
 		window.location.href = `${SCHEME_SWITCH}?index=${index}`;
 	}
@@ -81,15 +81,14 @@ class HSchemes {
 	/**
 	 * 跳转原生页面
 	 *
-	 * @param path
+	 * @param path 页面路径
+	 * @param params 可选参数
 	 */
-	public jump(path: string, params?: Record<string, any>) {
+	public jump(path: string, params?: Record<string, any>): void {
 		const SCHEME_JUMP = `${this.__SCHEME}/jump`;
-		// 拼接scheme
 		let schemeHref = `${SCHEME_JUMP}${path}`;
-		// 判断原生页面是否需要参数
 		if (params) {
-			schemeHref += '?';
+			schemeHref += "?";
 			Object.keys(params).forEach((key) => {
 				schemeHref += `${key}=${params[key]}&`;
 			});
@@ -97,15 +96,17 @@ class HSchemes {
 		}
 		window.location.href = schemeHref;
 	}
+
 	/**
 	 * 原生打开外部浏览器
 	 * @param url 资源地址
 	 */
-	public openBrowser(url: string) {
+	public openBrowser(url: string): void {
 		const SCHEME_BROWSER = `${this.__SCHEME}/browser`;
 		window.location.href = `${SCHEME_BROWSER}?url=${encodeURIComponent(url)}`;
 	}
 }
 
+// 导出单例
 const Schemes = HSchemes.defaultSchemes();
 export default Schemes;

@@ -119,21 +119,21 @@ export default class MatchLine {
 			canvas,
 			backCanvas,
 			items,
-			itemActiveCls = 'active',
-			strokeStyle = '#6495ED',
+			itemActiveCls = "active",
+			strokeStyle = "#6495ED",
 			lineWidth = 1,
 			answers,
 			standardAnswers,
 			checkAnswers = false,
-			correctlineColor = '#3CB371',
-			mislineColor = '#DC143C',
+			correctlineColor = "#3CB371",
+			mislineColor = "#DC143C",
 			disabled = false,
 			debug = false,
-			onChange
+			onChange,
 		} = options;
 
 		// 存储变量
-		this.tag = 'v__' + Math.random().toString(36).slice(2);
+		this.tag = `v__${Math.random().toString(36).slice(2)}`;
 		this.container = container;
 		this.items = items;
 		this.itemActiveCls = itemActiveCls;
@@ -147,8 +147,8 @@ export default class MatchLine {
 
 		// 画布 & 画笔相关
 		this.canvas = canvas;
-		this.ctx = canvas.getContext('2d');
-		this.backCtx = backCanvas.getContext('2d');
+		this.ctx = canvas.getContext("2d");
+		this.backCtx = backCanvas.getContext("2d");
 
 		this.strokeStyle = strokeStyle;
 		this.lineWidth = lineWidth;
@@ -156,11 +156,13 @@ export default class MatchLine {
 		const { width, height } = container.getBoundingClientRect();
 		canvas.width = backCanvas.width = width;
 		canvas.height = backCanvas.height = height;
-		this.debug && console.log('[MatchLine]：初始化成功');
+		this.debug && console.log("[MatchLine]：初始化成功");
 		// 计算元素信息
 		this.convertItems(items);
 		// 事件监听
-		items.forEach((item) => (item.onmousedown = this.mousedown.bind(this)));
+		items.forEach((item) => {
+			item.onmousedown = this.mousedown.bind(this);
+		});
 		container.onmousemove = this.mousemove.bind(this);
 		container.onmouseup = this.mouseup.bind(this);
 		container.onmouseleave = this.mouseleave.bind(this);
@@ -184,7 +186,7 @@ export default class MatchLine {
 			top: element.offsetTop,
 			left: element.offsetLeft,
 			width,
-			height
+			height,
 		};
 		while (parentElement) {
 			rect.top += parentElement.offsetTop;
@@ -210,12 +212,12 @@ export default class MatchLine {
 			// 获取元素在屏幕上的信息
 			const { left, top, width, height } = this.calcRect(item);
 			// 记录元素锚点坐标
-			const anchorX = left - canvasLeft + (ownership === 'L' ? width : 0);
+			const anchorX = left - canvasLeft + (ownership === "L" ? width : 0);
 			const anchorY = top - canvasTop + height / 2;
 			item.dataset.anchorX = String(anchorX);
 			item.dataset.anchorY = String(anchorY);
 			// 标识当前元素是否连线
-			item.dataset.checked = '0';
+			item.dataset.checked = "0";
 			// 标识当前元素为连线元素s
 			item.dataset.tag = this.tag;
 			// 绘制锚点，查看锚点位置是否准确（调试模式时呈现）
@@ -226,7 +228,7 @@ export default class MatchLine {
 				this.ctx?.closePath();
 			}
 		});
-		this.debug && console.log('[MatchLien]：元素锚点信息已挂载');
+		this.debug && console.log("[MatchLien]：元素锚点信息已挂载");
 	}
 
 	/**
@@ -280,7 +282,7 @@ export default class MatchLine {
 		// 获取鼠标经过的元素
 		const overElement = document.elementFromPoint(
 			clientX,
-			clientY
+			clientY,
 		) as HTMLElement;
 		// 获取开始元素归属：左侧还是右侧
 		const ownership = this.startElement?.dataset.ownership;
@@ -292,21 +294,21 @@ export default class MatchLine {
 		// ③ 鼠标经过的元素未被连线
 		const condition1 = overElement?.dataset.tag === this.tag;
 		const condition2 = overElement?.dataset.ownership !== ownership;
-		const condition3 = overElement?.dataset.checked !== '1';
+		const condition3 = overElement?.dataset.checked !== "1";
 		if (condition1 && condition2 && condition3) {
 			// 记录目标元素
 			this.endElement = overElement;
 			// 更新目标元素状态（高亮显示）
 			this.endElement.classList.add(this.itemActiveCls);
 			// 将开始元素和目标元素标识为已连线
-			this.endElement.dataset.checked = '1';
-			this.startElement!.dataset.checked = '1';
+			this.endElement.dataset.checked = "1";
+			this.startElement!.dataset.checked = "1";
 		}
 		// 如果没有命中目标元素，但是目标元素又存在，则移除相关状态
 		else if (this.endElement) {
 			this.endElement.classList.remove(this.itemActiveCls);
 			this.endElement.dataset.checked = this.startElement!.dataset.checked =
-				'0';
+				"0";
 			this.endElement = null;
 		}
 	}
@@ -319,15 +321,15 @@ export default class MatchLine {
 		if (!this.trigger) return;
 
 		// 如果开始元素存在且未被连线，则恢复开始元素的状态
-		if (this.startElement && this.startElement.dataset.checked !== '1') {
+		if (this.startElement && this.startElement.dataset.checked !== "1") {
 			this.startElement.classList.remove(this.itemActiveCls);
 		}
 		// 完成连线：开始元素和目标元素同时存在，并且被标识选中
 		if (
 			this.startElement &&
 			this.endElement &&
-			this.startElement.dataset.checked === '1' &&
-			this.endElement.dataset.checked === '1'
+			this.startElement.dataset.checked === "1" &&
+			this.endElement.dataset.checked === "1"
 		) {
 			// 获取连线始末坐标点
 			const { anchorX: x1, anchorY: y1 } = this.startElement.dataset;
@@ -343,8 +345,8 @@ export default class MatchLine {
 			if (keys.includes(startValue) || values.includes(startValue)) {
 				// 已连线，处理步骤
 				// ① 找到已连线的目标元素的value·注意：可能在Map结构的左侧，也可能在右侧
-				let key = '';
-				let value = '';
+				let key = "";
+				let value = "";
 				for (let i = 0; i < keys.length; i++) {
 					const k = keys[i];
 					const v = values[i];
@@ -359,7 +361,7 @@ export default class MatchLine {
 				const tarElement: QueryElementType = this.container.querySelector(sel);
 				if (!tarElement) return; // 如果目标元素不存在，则不做后续处理
 				// ③ 恢复目标元素的状态（标识+高亮状态）
-				tarElement.dataset.checked = '0';
+				tarElement.dataset.checked = "0";
 				tarElement.classList.remove(this.itemActiveCls);
 				// ④ 将对应的数据从记录中移除（因为后面会重新插入数据）
 				delete this.answers[key];
@@ -369,18 +371,18 @@ export default class MatchLine {
 				}
 			}
 			// 未连线
-			const k = ownership === 'L' ? startValue : endValue;
-			const v = ownership === 'L' ? endValue : startValue;
+			const k = ownership === "L" ? startValue : endValue;
+			const v = ownership === "L" ? endValue : startValue;
 			this.answers[k] = v;
-			this.onChange && this.onChange({ ...this.answers });
+			this.onChange?.({ ...this.answers });
 			this.backLines.push({
 				key: k,
 				point: {
 					x1: +(x1 || 0),
 					y1: +(y1 || 0),
 					x2: +(x2 || 0),
-					y2: +(y2 || 0)
-				}
+					y2: +(y2 || 0),
+				},
 			});
 			this.drawLines();
 		}
@@ -413,7 +415,7 @@ export default class MatchLine {
 		this.backCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.backCtx.strokeStyle = this.strokeStyle;
 		this.backCtx.lineWidth = this.lineWidth;
-		this.backLines.map(({ point: { x1, x2, y1, y2 } }) => {
+		this.backLines.forEach(({ point: { x1, x2, y1, y2 } }) => {
 			this.backCtx?.beginPath();
 			this.backCtx?.moveTo(x1, y1);
 			this.backCtx?.lineTo(x2, y2);
@@ -430,7 +432,7 @@ export default class MatchLine {
 		// 遍历Map结构，拿到key-value值 → key标识左侧/value标识右侧
 		const keys = Object.keys(this.answers);
 		keys.forEach((key) => {
-			if (this.answers.hasOwnProperty(key)) {
+			if (Object.hasOwn(this.answers, key)) {
 				const value = this.answers[key];
 				// 获取开始元素和目标元素
 				const leftSel = `[data-value="${key}"]`;
@@ -441,10 +443,10 @@ export default class MatchLine {
 					this.container.querySelector(rightSel);
 				if (leftElement && rightElement) {
 					// 更新选中状态
-					leftElement.dataset.checked = rightElement.dataset.checked = '1';
+					leftElement.dataset.checked = rightElement.dataset.checked = "1";
 					// 高亮显示元素
-					leftElement.classList.add('active');
-					rightElement.classList.add('active');
+					leftElement.classList.add("active");
+					rightElement.classList.add("active");
 					// 计算坐标
 					const { anchorX: x1, anchorY: y1 } = leftElement.dataset;
 					const { anchorX: x2, anchorY: y2 } = rightElement.dataset;
@@ -455,8 +457,8 @@ export default class MatchLine {
 							x1: +(x1 || 0),
 							y1: +(y1 || 0),
 							x2: +(x2 || 0),
-							y2: +(y2 || 0)
-						}
+							y2: +(y2 || 0),
+						},
 					});
 				}
 			}
@@ -471,11 +473,11 @@ export default class MatchLine {
 		this.backCtx?.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.items.forEach((item) => {
 			item.classList.remove(this.itemActiveCls);
-			item.dataset.checked = '0';
+			item.dataset.checked = "0";
 		});
 		this.answers = {};
 		this.backLines = [];
-		this.onChange && this.onChange({ ...this.answers });
+		this.onChange?.({ ...this.answers });
 	}
 
 	/**
@@ -493,14 +495,14 @@ export default class MatchLine {
 			const rightElement: QueryElementType =
 				this.container.querySelector(rightSel);
 			if (leftElement && rightElement) {
-				leftElement.dataset.checked = rightElement.dataset.checked = '0';
+				leftElement.dataset.checked = rightElement.dataset.checked = "0";
 				leftElement.classList.remove(this.itemActiveCls);
 				rightElement.classList.remove(this.itemActiveCls);
 				this.drawLines();
 			}
-			this.onChange && this.onChange({ ...this.answers });
+			this.onChange?.({ ...this.answers });
 		} else {
-			this.debug && console.log('[MatchLine]：当前无可撤销的记录');
+			this.debug && console.log("[MatchLine]：当前无可撤销的记录");
 		}
 	}
 	/**
@@ -523,7 +525,7 @@ export default class MatchLine {
 		const lines: CheckAnswersItemProps[] = [];
 		// 遍历keys
 		keys.forEach((key) => {
-			if (this.answers.hasOwnProperty(key)) {
+			if (Object.hasOwn(this.answers, key)) {
 				const value = this.answers[key];
 				/****************
 				 * 找到用户连线的数据
@@ -536,7 +538,7 @@ export default class MatchLine {
 					this.container.querySelector(rightSel);
 				if (leftElement && rightElement) {
 					// 更新选中状态
-					leftElement.dataset.checked = rightElement.dataset.checked = '1';
+					leftElement.dataset.checked = rightElement.dataset.checked = "1";
 					// 高亮显示元素
 					leftElement.classList.add(this.itemActiveCls);
 					rightElement.classList.add(this.itemActiveCls);
@@ -555,8 +557,8 @@ export default class MatchLine {
 							x1: +(x1 || 0),
 							y1: +(y1 || 0),
 							x2: +(x2 || 0),
-							y2: +(y2 || 0)
-						}
+							y2: +(y2 || 0),
+						},
 					});
 				}
 			}

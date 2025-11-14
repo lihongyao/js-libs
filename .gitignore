@@ -1,20 +1,47 @@
-# .gitignore
+# Node dependencies
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
 
-node_modules
-dist
-build
-*.local
+# Lock files (pnpm 推荐提交 pnpm-lock.yaml)
+package-lock.json
+yarn.lock
 
-logs
-*.log
+# Build / output
+packages/**/dist/
+packages/**/build/
+packages/**/lib/
+packages/**/index.d.ts
+packages/**/index.js
 
+# TypeScript build cache
+*.tsbuildinfo
 
-.vscode/*
-!.vscode/extensions.json
-.idea
+# OS / editor files
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+logs/
+
+# Biome / Prettier / ESLint cache
+.biomeignore
+.prettierignore
+.eslintcache
+
+# Husky internal files
+.husky/_/
+
+# Temporary / swap files
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# Rollup / bundler cache
+.cache/

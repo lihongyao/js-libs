@@ -1,111 +1,111 @@
 @keyframes magnifier-loading-circle {
-  from {
-    transform: rotateZ(0);
-  }
-  to {
-    transform: rotateZ(360deg);
-  }
+	from {
+		transform: rotateZ(0);
+	}
+	to {
+		transform: rotateZ(360deg);
+	}
 }
 
 /* 外层容器·遮罩层 */
 .Lg-magnifier {
-  width: 100%;
-  height: 100%;
+	width: 100%;
+	height: 100%;
 
-  position: fixed;
-  top: 0;
-  left: 0;
+	position: fixed;
+	top: 0;
+	left: 0;
 
-  z-index: 99999;
+	z-index: 99999;
 }
 
 /* 屏幕截图 */
 .Lg-magnifier__screenshots {
-  width: 100%;
-  height: 100%;
+	width: 100%;
+	height: 100%;
 
-  position: absolute;
-  top: 0;
-  left: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
 
-  /* 作为放大镜源数据，无需呈现给用户 */
-  opacity: 0;
-  z-index: -1;
+	/* 作为放大镜源数据，无需呈现给用户 */
+	opacity: 0;
+	z-index: -1;
 }
 
 /* 裁剪区域 */
 .Lg-magnifier__cropBox {
-  width: 100px;
-  height: 100px;
-  box-sizing: border-box;
-  /** 由于裁剪区域在拖拽区域之上，为了不影响拖拽事件，需设置此属性用于事件穿透 */
-  pointer-events: none;
+	width: 100px;
+	height: 100px;
+	box-sizing: border-box;
+	/** 由于裁剪区域在拖拽区域之上，为了不影响拖拽事件，需设置此属性用于事件穿透 */
+	pointer-events: none;
 
-  position: absolute;
-  top: 0;
-  left: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 /* 放大镜 & 缩放区域 */
 .Lg-magnifier__magnifier {
-  box-sizing: border-box;
-  border: 2px dashed #7b68ee;
-  /* 拖拽区域在此元素内部，这里是让拖拽元素在内部居中 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	box-sizing: border-box;
+	border: 2px dashed #7b68ee;
+	/* 拖拽区域在此元素内部，这里是让拖拽元素在内部居中 */
+	display: flex;
+	justify-content: center;
+	align-items: center;
 
-  cursor: crosshair;
+	cursor: crosshair;
 
-  position: absolute;
-  top: 0;
-  left: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 /* 拖拽元素 */
 .Lg-magnifier__dragBox {
-  box-sizing: border-box;
-  cursor: move;
+	box-sizing: border-box;
+	cursor: move;
 }
 
 /* 放大镜呈现内容 */
 .Lg-magnifier__scaleImg {
-  pointer-events: none;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
+	pointer-events: none;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: -1;
 }
 
 /** 加载元素 */
 .Lg-magnifier__loading {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.75);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 
-  position: absolute;
-  top: 0;
-  left: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 .Lg-magnifier__loading-circle {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: inline-block;
-  border-top: 3px solid #f5f5f5;
-  border-right: 3px solid transparent;
-  animation: magnifier-loading-circle 1s linear infinite;
-  margin-bottom: 16px;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	display: inline-block;
+	border-top: 3px solid #f5f5f5;
+	border-right: 3px solid transparent;
+	animation: magnifier-loading-circle 1s linear infinite;
+	margin-bottom: 16px;
 }
 .Lg-magnifier__loading-text {
-  color: #f5f5f5;
-  font-family: Source Han Serif CN;
-  font-size: 14px;
+	color: #f5f5f5;
+	font-family: monospace;
+	font-size: 14px;
 }

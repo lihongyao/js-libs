@@ -20,11 +20,12 @@ class Storage {
 	 * @param key 键
 	 * @returns
 	 */
-	public static get<T = any>(key: string): T | void {
+	public static get<T = any>(key: string): T | undefined {
 		const data = localStorage.getItem(key);
 		if (data) {
 			return JSON.parse(data) as T;
 		}
+		return undefined;
 	}
 	/**
 	 * 移除数据
@@ -38,9 +39,9 @@ class Storage {
 	public static del(key?: string | string[]) {
 		const type = Object.prototype.toString.call(key).slice(8, -1).toLowerCase();
 		if (key) {
-			if (type === 'string') {
+			if (type === "string") {
 				localStorage.removeItem(key as string);
-			} else if (type === 'array') {
+			} else if (type === "array") {
 				const keys = key as string[];
 				keys.forEach((_key) => {
 					localStorage.removeItem(_key);
@@ -76,7 +77,7 @@ class Storage {
 	public static arrSave<T = any>(key: string, obj: T, indexes?: keyof T) {
 		return new Promise((resolve, reject) => {
 			if (!key || !obj) {
-				reject('参数不完整');
+				reject("参数不完整");
 				return;
 			}
 			let arr: T[] = [];
